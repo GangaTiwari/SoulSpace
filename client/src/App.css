@@ -1,0 +1,9 @@
+/* Remove most custom styles, keep only logo animation for reference */
+@keyframes App-logo-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
