@@ -67,6 +67,9 @@ SoulSpace is a full-stack wellness and mental health web application. It provide
 ## License
 This project is for educational and personal wellness use. See [LICENSE](LICENSE) for details.
 
+## Contributors
+Amit Garg, Ganga Tiwari
+
 ## Acknowledgements
 - Google Gemini API
 - Open source React and Node.js community
