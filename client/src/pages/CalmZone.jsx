@@ -1,232 +1,184 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { motion } from 'framer-motion';
-import { Brain, Volume2, VolumeX, Play, Pause, RotateCcw } from 'lucide-react';
+import { Play, Pause, RotateCcw, Wind, Timer, Music } from 'lucide-react';
+
+const breathingExercises = [
+  { name: '4-7-8 Breathing', inhale: 4, hold: 7, exhale: 8, desc: 'Calm your nervous system', color: 'bg-indigo-50 border-indigo-200 text-indigo-700' },
+  { name: 'Box Breathing', inhale: 4, hold: 4, exhale: 4, desc: 'Improve focus & reduce stress', color: 'bg-teal-50 border-teal-200 text-teal-700' },
+  { name: 'Deep Breathing', inhale: 4, hold: 0, exhale: 6, desc: 'Simple relaxation', color: 'bg-violet-50 border-violet-200 text-violet-700' },
+];
+
+const ambientSounds = [
+  { id: 'rain', name: 'Rain', icon: '🌧️' },
+  { id: 'ocean', name: 'Ocean', icon: '🌊' },
+  { id: 'forest', name: 'Forest', icon: '🌲' },
+  { id: 'fire', name: 'Fireplace', icon: '🔥' },
+  { id: 'birds', name: 'Birds', icon: '🐦' },
+];
+
+const phaseColors = {
+  inhale: { ring: 'bg-indigo-400', text: 'text-indigo-600', label: 'Inhale' },
+  hold: { ring: 'bg-amber-400', text: 'text-amber-600', label: 'Hold' },
+  exhale: { ring: 'bg-teal-400', text: 'text-teal-600', label: 'Exhale' },
+};
+
+const formatTime = s => `${Math.floor(s / 60)}:${String(s % 60).padStart(2, '0')}`;
 
 const CalmZone = () => {
-  const [breathingPhase, setBreathingPhase] = useState('inhale');
-  const [isBreathingActive, setIsBreathingActive] = useState(false);
+  const [breathPhase, setBreathPhase] = useState('inhale');
+  const [breathActive, setBreathActive] = useState(false);
   const [selectedExercise, setSelectedExercise] = useState(null);
   const [selectedSound, setSelectedSound] = useState(null);
-  const [volume, setVolume] = useState(0.5);
-  const [isMuted, setIsMuted] = useState(false);
-  const [isMeditationActive, setIsMeditationActive] = useState(false);
-  const [currentMeditationTime, setCurrentMeditationTime] = useState(300);
+  const [meditationActive, setMeditationActive] = useState(false);
   const [meditationTime, setMeditationTime] = useState(300);
-  const meditationTimerRef = useRef(null);
-
-  const breathingExercises = [
-    { name: "4-7-8 Breathing", inhale: 4, hold: 7, exhale: 8, description: "Calm your nervous system" },
-    { name: "Box Breathing", inhale: 4, hold: 4, exhale: 4, description: "Improve focus and reduce stress" },
-    { name: "Deep Breathing", inhale: 4, hold: 0, exhale: 6, description: "Simple relaxation" }
-  ];
-
-  const ambientSounds = [
-    { id: 'rain', name: 'Rain Sounds', emoji: '???' },
-    { id: 'ocean', name: 'Ocean Waves', emoji: '??' },
-    { id: 'forest', name: 'Forest', emoji: '??' },
-    { id: 'fire', name: 'Fireplace', emoji: '??' },
-    { id: 'birds', name: 'Birds', emoji: '??' }
-  ];
+  const [currentTime, setCurrentTime] = useState(300);
+  const timerRef = useRef(null);
 
   useEffect(() => {
-    if (isMeditationActive && currentMeditationTime > 0) {
-      meditationTimerRef.current = setTimeout(() => {
-        setCurrentMeditationTime(prev => prev - 1);
-      }, 1000);
-    } else if (currentMeditationTime === 0 && isMeditationActive) {
-      setIsMeditationActive(false);
-      alert('Meditation session complete!');
+    if (meditationActive && currentTime > 0) {
+      timerRef.current = setTimeout(() => setCurrentTime(t => t - 1), 1000);
+    } else if (currentTime === 0 && meditationActive) {
+      setMeditationActive(false);
     }
-
-    return () => {
-      if (meditationTimerRef.current) clearTimeout(meditationTimerRef.current);
-    };
-  }, [isMeditationActive, currentMeditationTime]);
+    return () => clearTimeout(timerRef.current);
+  }, [meditationActive, currentTime]);
 
   useEffect(() => {
+    if (!breathActive || !selectedExercise) return;
+    const { inhale, hold, exhale } = selectedExercise;
+    const sequence = [
+      { phase: 'inhale', duration: inhale * 1000 },
+      ...(hold > 0 ? [{ phase: 'hold', duration: hold * 1000 }] : []),
+      { phase: 'exhale', duration: exhale * 1000 },
+    ];
+    let idx = 0;
     let timer;
-    if (isBreathingActive && selectedExercise) {
-      const { inhale, hold, exhale } = selectedExercise;
-      const sequence = [
-        { phase: 'inhale', duration: inhale * 1000 },
-        { phase: 'hold', duration: hold * 1000 },
-        { phase: 'exhale', duration: exhale * 1000 },
-      ];
-      
-      let currentIndex = 0;
-      const nextPhase = () => {
-        const current = sequence[currentIndex];
-        setBreathingPhase(current.phase);
-        currentIndex = (currentIndex + 1) % sequence.length;
-        timer = setTimeout(nextPhase, current.duration);
-      };
-      
-      nextPhase();
-      return () => clearTimeout(timer);
-    }
-  }, [isBreathingActive, selectedExercise]);
+    const next = () => {
+      setBreathPhase(sequence[idx].phase);
+      timer = setTimeout(() => { idx = (idx + 1) % sequence.length; next(); }, sequence[idx].duration);
+    };
+    next();
+    return () => clearTimeout(timer);
+  }, [breathActive, selectedExercise]);
 
-  const formatTime = (seconds) => {
-    const mins = Math.floor(seconds / 60);
-    const secs = seconds % 60;
-    return `${mins}:${secs.toString().padStart(2, '0')}`;
-  };
+  const phase = phaseColors[breathPhase];
 
   return (
-    <div className="max-w-4xl mx-auto py-12">
-      {/* Header */}
-      <div className="mb-12">
-        <h1 className="text-3xl font-bold text-white mb-2 flex items-center gap-3">
-          <Brain size={30} className="text-indigo-500" />
-          Calm Zone
-        </h1>
-        <p className="text-gray-300">Relaxation exercises for peace and mindfulness</p>
+    <div className="max-w-3xl mx-auto py-8 space-y-6">
+      <div>
+        <h1 className="text-2xl font-bold text-gray-900 mb-1">Calm Zone</h1>
+        <p className="text-gray-400 text-sm">Breathe, relax, and find your peace</p>
       </div>
 
-      {/* Breathing Exercises */}
-      <div className="mb-12">
-        <h2 className="text-xl font-semibold text-white mb-6">Breathing Exercises</h2>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-          {breathingExercises.map((exercise) => (
-            <button
-              key={exercise.name}
-              onClick={() => {
-                setSelectedExercise(exercise);
-                setIsBreathingActive(false);
-              }}
-              className={`bg-gray-900 border-2 rounded-xl p-6 text-left transition-all ${
-                selectedExercise?.name === exercise.name
-                  ? 'border-indigo-500 bg-indigo-600/10'
-                  : 'border-gray-800 hover:border-gray-700'
-              }`}
-            >
-              <p className="font-semibold text-white">{exercise.name}</p>
-              <p className="text-sm text-gray-400 mt-1">{exercise.description}</p>
-              <p className="text-xs text-gray-500 mt-2">{exercise.inhale}s inhale / {exercise.hold}s hold / {exercise.exhale}s exhale</p>
+      {/* Breathing */}
+      <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
+        <div className="flex items-center gap-2 mb-5">
+          <Wind size={18} className="text-indigo-500" />
+          <h2 className="text-base font-semibold text-gray-800">Breathing Exercises</h2>
+        </div>
+
+        <div className="grid grid-cols-3 gap-3 mb-6">
+          {breathingExercises.map(ex => (
+            <button key={ex.name} onClick={() => { setSelectedExercise(ex); setBreathActive(false); setBreathPhase('inhale'); }}
+              className={`p-4 rounded-2xl border-2 text-left transition-all ${selectedExercise?.name === ex.name ? ex.color : 'border-gray-100 hover:border-gray-200 bg-gray-50'}`}>
+              <p className="text-sm font-semibold text-gray-800 mb-1">{ex.name}</p>
+              <p className="text-xs text-gray-500">{ex.desc}</p>
+              <p className="text-xs text-gray-400 mt-1">{ex.inhale}s · {ex.hold}s · {ex.exhale}s</p>
             </button>
           ))}
         </div>
 
         {selectedExercise && (
-          <div className="bg-gray-900 border border-gray-800 rounded-xl p-6 text-center">
-            <p className="text-3xl font-bold text-indigo-400 mb-6 capitalize">{breathingPhase}</p>
-            <motion.div
-              animate={{ scale: isBreathingActive ? 1.5 : 1 }}
-              transition={{ duration: selectedExercise[breathingPhase.toLowerCase()] || 2, ease: "easeInOut" }}
-              className="w-32 h-32 bg-indigo-500 rounded-full mx-auto mb-8"
-            />
-            <button
-              onClick={() => setIsBreathingActive(!isBreathingActive)}
-              className="bg-indigo-600 hover:bg-indigo-500 text-white px-8 py-3 rounded-lg font-semibold transition-colors flex items-center gap-2 mx-auto"
-            >
-              {isBreathingActive ? <Pause size={20} /> : <Play size={20} />}
-              {isBreathingActive ? 'Pause' : 'Start'}
+          <div className="flex flex-col items-center py-6">
+            <p className={`text-sm font-semibold mb-6 ${phase.text}`}>{phase.label}</p>
+            <div className="relative flex items-center justify-center mb-8">
+              <div className={`w-32 h-32 ${phase.ring} rounded-full opacity-20 transition-all duration-1000 ${breathActive ? 'scale-150' : 'scale-100'}`} />
+              <div className={`absolute w-20 h-20 ${phase.ring} rounded-full opacity-60 transition-all duration-1000 ${breathActive ? 'scale-125' : 'scale-100'}`} />
+              <div className={`absolute w-10 h-10 ${phase.ring} rounded-full`} />
+            </div>
+            <button onClick={() => setBreathActive(!breathActive)}
+              className="inline-flex items-center gap-2 bg-indigo-600 hover:bg-indigo-500 text-white px-6 py-2.5 rounded-xl font-semibold text-sm transition-colors">
+              {breathActive ? <><Pause size={16} /> Pause</> : <><Play size={16} /> Start</>}
             </button>
           </div>
         )}
       </div>
 
       {/* Ambient Sounds */}
-      <div className="mb-12">
-        <h2 className="text-xl font-semibold text-white mb-6">Ambient Sounds</h2>
-        <div className="grid grid-cols-2 md:grid-cols-5 gap-4 mb-8">
-          {ambientSounds.map((sound) => (
-            <button
-              key={sound.id}
-              onClick={() => setSelectedSound(selectedSound?.id === sound.id ? null : sound)}
-              className={`bg-gray-900 border-2 rounded-lg p-4 text-center transition-all ${
-                selectedSound?.id === sound.id
-                  ? 'border-indigo-500 bg-indigo-600/10'
-                  : 'border-gray-800 hover:border-gray-700'
-              }`}
-            >
-              <p className="text-3xl mb-2">{sound.emoji}</p>
-              <p className="text-sm font-medium text-gray-300">{sound.name}</p>
+      <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
+        <div className="flex items-center gap-2 mb-5">
+          <Music size={18} className="text-teal-500" />
+          <h2 className="text-base font-semibold text-gray-800">Ambient Sounds</h2>
+          <span className="text-xs text-gray-400 ml-1">(visual only)</span>
+        </div>
+        <div className="grid grid-cols-5 gap-3">
+          {ambientSounds.map(s => (
+            <button key={s.id} onClick={() => setSelectedSound(selectedSound?.id === s.id ? null : s)}
+              className={`flex flex-col items-center gap-2 p-4 rounded-2xl border-2 transition-all ${selectedSound?.id === s.id ? 'border-teal-300 bg-teal-50' : 'border-gray-100 hover:border-gray-200 bg-gray-50'}`}>
+              <span className="text-2xl">{s.icon}</span>
+              <span className="text-xs font-medium text-gray-500">{s.name}</span>
             </button>
           ))}
         </div>
-
         {selectedSound && (
-          <div className="bg-gray-900 border border-gray-800 rounded-xl p-6">
-            <div className="flex items-center justify-between">
-              <span className="text-white font-semibold">{selectedSound.name} Playing</span>
-              <div className="flex items-center gap-4">
-                <button
-                  onClick={() => setIsMuted(!isMuted)}
-                  className="text-gray-400 hover:text-white transition-colors"
-                >
-                  {isMuted ? <VolumeX size={20} /> : <Volume2 size={20} />}
-                </button>
-                <input
-                  type="range"
-                  min="0"
-                  max="1"
-                  step="0.1"
-                  value={isMuted ? 0 : volume}
-                  onChange={(e) => setVolume(parseFloat(e.target.value))}
-                  className="w-24 h-2 bg-gray-800 rounded-lg appearance-none cursor-pointer accent-indigo-600"
-                />
-              </div>
+          <div className="mt-4 flex items-center gap-3 px-4 py-3 bg-teal-50 rounded-xl">
+            <div className="flex gap-1">
+              {[1,2,3].map(i => (
+                <div key={i} className="w-1 bg-teal-400 rounded-full animate-pulse" style={{ height: `${8 + i * 4}px`, animationDelay: `${i * 0.15}s` }} />
+              ))}
             </div>
+            <span className="text-sm font-medium text-teal-700">{selectedSound.name} selected</span>
           </div>
         )}
       </div>
 
       {/* Meditation Timer */}
-      <div className="bg-gray-900 border border-gray-800 rounded-xl p-6 text-center">
-        <h2 className="text-xl font-semibold text-white mb-6">Meditation Timer</h2>
-        
-        {/* Preset Buttons */}
-        <div className="flex gap-3 justify-center mb-8">
-          {[
-            { label: '5 min', value: 300 },
-            { label: '10 min', value: 600 },
-            { label: '20 min', value: 1200 }
-          ].map((preset) => (
-            <button
-              key={preset.value}
-              onClick={() => {
-                setMeditationTime(preset.value);
-                setCurrentMeditationTime(preset.value);
-              }}
-              className={`text-sm px-4 py-2 rounded-lg transition-colors ${
-                meditationTime === preset.value
-                  ? 'bg-indigo-600 border border-indigo-500 text-white'
-                  : 'bg-gray-800 hover:bg-gray-700 text-gray-300 border border-gray-700'
-              }`}
-            >
-              {preset.label}
+      <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
+        <div className="flex items-center gap-2 mb-5">
+          <Timer size={18} className="text-violet-500" />
+          <h2 className="text-base font-semibold text-gray-800">Meditation Timer</h2>
+        </div>
+
+        <div className="flex gap-2 mb-6">
+          {[{ label: '5 min', value: 300 }, { label: '10 min', value: 600 }, { label: '20 min', value: 1200 }].map(p => (
+            <button key={p.value} onClick={() => { setMeditationTime(p.value); setCurrentTime(p.value); setMeditationActive(false); }}
+              className={`px-4 py-2 rounded-xl text-sm font-semibold transition-all ${meditationTime === p.value ? 'bg-violet-600 text-white' : 'bg-gray-100 text-gray-500 hover:bg-gray-200'}`}>
+              {p.label}
             </button>
           ))}
         </div>
-        
-        <div className="text-6xl font-bold text-indigo-400 mb-8 font-mono">{formatTime(currentMeditationTime)}</div>
-        
-        <div className="flex gap-3 justify-center">
-          <button
-            onClick={() => setIsMeditationActive(!isMeditationActive)}
-            className="bg-indigo-600 hover:bg-indigo-500 text-white px-8 py-3 rounded-lg font-semibold transition-colors inline-flex items-center gap-2"
-          >
-            {isMeditationActive ? <Pause size={20} /> : <Play size={20} />}
-            {isMeditationActive ? 'Pause' : 'Start'}
-          </button>
-          <button
-            onClick={() => setCurrentMeditationTime(meditationTime)}
-            className="bg-gray-800 hover:bg-gray-700 text-gray-300 px-6 py-3 rounded-lg font-semibold transition-colors inline-flex items-center gap-2 border border-gray-700"
-          >
-            <RotateCcw size={18} />
-            Reset
-          </button>
+
+        <div className="flex flex-col items-center py-4">
+          <div className="relative w-36 h-36 mb-6">
+            <svg className="w-full h-full -rotate-90" viewBox="0 0 100 100">
+              <circle cx="50" cy="50" r="42" fill="none" stroke="#f3f4f6" strokeWidth="8" />
+              <circle cx="50" cy="50" r="42" fill="none" stroke="#7c3aed" strokeWidth="8" strokeLinecap="round"
+                strokeDasharray={`${2 * Math.PI * 42}`}
+                strokeDashoffset={`${2 * Math.PI * 42 * (1 - currentTime / meditationTime)}`}
+                className="transition-all duration-1000" />
+            </svg>
+            <div className="absolute inset-0 flex items-center justify-center">
+              <span className="text-2xl font-bold text-gray-800 font-mono">{formatTime(currentTime)}</span>
+            </div>
+          </div>
+
+          <div className="flex gap-3">
+            <button onClick={() => setMeditationActive(!meditationActive)}
+              className="inline-flex items-center gap-2 bg-violet-600 hover:bg-violet-500 text-white px-6 py-2.5 rounded-xl font-semibold text-sm transition-colors">
+              {meditationActive ? <><Pause size={16} /> Pause</> : <><Play size={16} /> Start</>}
+            </button>
+            <button onClick={() => { setCurrentTime(meditationTime); setMeditationActive(false); }}
+              className="inline-flex items-center gap-2 bg-gray-100 hover:bg-gray-200 text-gray-600 px-4 py-2.5 rounded-xl font-semibold text-sm transition-colors">
+              <RotateCcw size={16} /> Reset
+            </button>
+          </div>
         </div>
       </div>
 
-      {/* Emergency Resources */}
-      <p className="text-xs text-gray-600 text-center mt-8">
-        If you're in crisis, call or text 988 (Suicide & Crisis Lifeline) or text HOME to 741741
+      <p className="text-xs text-gray-400 text-center">
+        If you're in crisis, call or text <span className="font-semibold">988</span> (Suicide & Crisis Lifeline) or text HOME to <span className="font-semibold">741741</span>
       </p>
     </div>
   );
 };
 
 export default CalmZone;
-

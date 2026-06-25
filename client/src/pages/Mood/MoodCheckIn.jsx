@@ -1,7 +1,20 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import API from '../../api/axios';
-import { Angry, ArrowRight, Cloud, Frown, Laugh, Meh, Smile, Zap } from 'lucide-react';
+import { Angry, Cloud, Frown, Laugh, Meh, Smile, Zap, ArrowRight } from 'lucide-react';
+
+const moods = [
+  { id: 'very_happy', icon: Laugh, label: 'Very Happy', color: 'text-yellow-500', bg: 'bg-yellow-50', border: 'border-yellow-300' },
+  { id: 'happy', icon: Smile, label: 'Happy', color: 'text-green-500', bg: 'bg-green-50', border: 'border-green-300' },
+  { id: 'calm', icon: Cloud, label: 'Calm', color: 'text-sky-500', bg: 'bg-sky-50', border: 'border-sky-300' },
+  { id: 'neutral', icon: Meh, label: 'Neutral', color: 'text-gray-400', bg: 'bg-gray-50', border: 'border-gray-300' },
+  { id: 'sad', icon: Frown, label: 'Sad', color: 'text-blue-400', bg: 'bg-blue-50', border: 'border-blue-300' },
+  { id: 'anxious', icon: Cloud, label: 'Anxious', color: 'text-purple-400', bg: 'bg-purple-50', border: 'border-purple-300' },
+  { id: 'angry', icon: Angry, label: 'Angry', color: 'text-red-500', bg: 'bg-red-50', border: 'border-red-300' },
+  { id: 'excited', icon: Zap, label: 'Excited', color: 'text-orange-500', bg: 'bg-orange-50', border: 'border-orange-300' },
+];
+
+const intensityLabels = ['', 'Very Low', 'Low', 'Slightly Low', 'Moderate', 'Average', 'Above Avg', 'Good', 'Great', 'Very High', 'Exceptional'];
 
 const MoodCheckIn = () => {
   const navigate = useNavigate();
@@ -10,152 +23,90 @@ const MoodCheckIn = () => {
   const [notes, setNotes] = useState('');
   const [loading, setLoading] = useState(false);
   const [journalPrompt, setJournalPrompt] = useState('');
-  const [recentMood, setRecentMood] = useState(null);
 
   useEffect(() => {
-    fetchRecentMood();
-    generateJournalPrompt();
+    API.get('/journal/prompt').then(r => setJournalPrompt(r.data.data?.prompt || '')).catch(() => {});
   }, []);
-
-  const fetchRecentMood = async () => {
-    try {
-      const response = await API.get('/mood/history?limit=1');
-      if (response.data.data && response.data.data.length > 0) {
-        setRecentMood(response.data.data[0]);
-      }
-    } catch (error) {
-      console.error('Error fetching recent mood:', error);
-    }
-  };
-
-  const generateJournalPrompt = async () => {
-    try {
-      const response = await API.get('/journal/prompt');
-      setJournalPrompt(response.data.data.prompt);
-    } catch (error) {
-      console.error('Error generating journal prompt:', error);
-      setJournalPrompt("How are you feeling today? What's on your mind?");
-    }
-  };
-
-  const moods = [
-    { id: 'very_happy', icon: Laugh, label: 'Very Happy' },
-    { id: 'happy', icon: Smile, label: 'Happy' },
-    { id: 'calm', icon: Cloud, label: 'Calm' },
-    { id: 'neutral', icon: Meh, label: 'Neutral' },
-    { id: 'sad', icon: Frown, label: 'Sad' },
-    { id: 'anxious', icon: Cloud, label: 'Anxious' },
-    { id: 'angry', icon: Angry, label: 'Angry' },
-    { id: 'excited', icon: Zap, label: 'Excited' }
-  ];
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
-    if (!selectedMood) {
-      alert('Please select a mood');
-      return;
-    }
-
+    if (!selectedMood) return;
     try {
       setLoading(true);
-
-      await API.post('/mood', {
-        mood: selectedMood.id,
-        intensity,
-        notes: notes.trim() || undefined,
-        timestamp: new Date().toISOString()
-      });
-      alert('Mood recorded successfully!');
+      await API.post('/mood', { mood: selectedMood.id, intensity, notes: notes.trim() || undefined, timestamp: new Date().toISOString() });
       navigate('/mood/history');
-    } catch (error) {
-      console.error('Error recording mood:', error);
+    } catch {
       alert('Failed to record mood. Please try again.');
     } finally {
       setLoading(false);
     }
   };
 
-  const recentMoodMeta = recentMood ? moods.find(m => m.id === recentMood.mood) : null;
-  const RecentMoodIcon = recentMoodMeta?.icon || Meh;
-
   return (
-    <div className="max-w-2xl mx-auto py-12">
-      <div className="mb-12">
-        <h1 className="text-3xl font-bold text-white mb-2 flex items-center gap-3">
-          <Smile size={30} className="text-indigo-500" />
-          How are you feeling?
-        </h1>
-        <p className="text-gray-300">Take a moment to check in with yourself</p>
+    <div className="max-w-2xl mx-auto py-8 space-y-8">
+      <div>
+        <h1 className="text-2xl font-bold text-gray-900 mb-1">How are you feeling?</h1>
+        <p className="text-gray-400 text-sm">Take a moment to check in with yourself</p>
       </div>
 
-      {recentMood && (
-        <div className="bg-gray-900 border border-gray-800 rounded-xl p-6 mb-8">
-          <p className="text-sm font-medium text-gray-500 mb-3">Your Last Check-in</p>
-          <RecentMoodIcon size={28} className="text-indigo-500" />
-          <p className="text-white font-medium mt-2">{recentMoodMeta?.label} ({recentMood.intensity}/10)</p>
-          <p className="text-gray-500 text-xs mt-1">{new Date(recentMood.timestamp).toLocaleDateString()}</p>
-        </div>
-      )}
-
-      <form onSubmit={handleSubmit} className="space-y-8">
-        <div>
-          <h2 className="text-xl font-semibold text-white mb-4">Select Your Mood</h2>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-            {moods.map((mood) => {
-              const MoodIcon = mood.icon;
+      <form onSubmit={handleSubmit} className="space-y-6">
+        {/* Mood grid */}
+        <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
+          <p className="text-sm font-semibold text-gray-700 mb-4">Select your mood</p>
+          <div className="grid grid-cols-4 gap-3">
+            {moods.map(mood => {
+              const Icon = mood.icon;
+              const selected = selectedMood?.id === mood.id;
               return (
                 <button
                   key={mood.id}
                   type="button"
                   onClick={() => setSelectedMood(mood)}
-                  className={`p-6 rounded-lg border-2 transition-colors ${
-                    selectedMood?.id === mood.id
-                      ? 'border-indigo-500 bg-indigo-600/10'
-                      : 'border-gray-800 bg-gray-900 hover:border-gray-700'
+                  className={`flex flex-col items-center gap-2 p-4 rounded-2xl border-2 transition-all ${
+                    selected ? `${mood.bg} ${mood.border}` : 'border-gray-100 hover:border-gray-200 bg-white'
                   }`}
                 >
-                  <MoodIcon size={32} className="text-indigo-500 mx-auto mb-2" />
-                  <div className="text-sm font-medium text-gray-300">{mood.label}</div>
+                  <Icon size={28} className={selected ? mood.color : 'text-gray-400'} />
+                  <span className={`text-xs font-medium ${selected ? 'text-gray-800' : 'text-gray-400'}`}>{mood.label}</span>
                 </button>
               );
             })}
           </div>
         </div>
 
-        <div>
-          <h2 className="text-xl font-semibold text-white mb-4">Intensity: {intensity}/10</h2>
+        {/* Intensity */}
+        <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
+          <div className="flex items-center justify-between mb-4">
+            <p className="text-sm font-semibold text-gray-700">Intensity</p>
+            <span className="text-sm font-semibold text-indigo-600">{intensity}/10 — {intensityLabels[intensity]}</span>
+          </div>
           <input
-            type="range"
-            min="1"
-            max="10"
-            value={intensity}
-            onChange={(e) => setIntensity(parseInt(e.target.value))}
-            className="w-full h-2 bg-gray-800 rounded-lg appearance-none cursor-pointer accent-indigo-600"
+            type="range" min="1" max="10" value={intensity}
+            onChange={e => setIntensity(parseInt(e.target.value))}
+            className="w-full h-2 rounded-full appearance-none cursor-pointer accent-indigo-600 bg-indigo-100"
           />
-          <div className="flex justify-between text-xs text-gray-500 mt-2">
-            <span>Low</span>
-            <span>High</span>
+          <div className="flex justify-between text-xs text-gray-300 mt-2">
+            <span>Low</span><span>High</span>
           </div>
         </div>
 
-        <div>
-          <h2 className="text-xl font-semibold text-white mb-4">Add Notes (Optional)</h2>
+        {/* Notes */}
+        <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
+          <p className="text-sm font-semibold text-gray-700 mb-3">Add a note <span className="text-gray-400 font-normal">(optional)</span></p>
           <textarea
             value={notes}
-            onChange={(e) => setNotes(e.target.value)}
-            placeholder={journalPrompt || "What's going on? Any thoughts or feelings you'd like to capture?"}
-            className="w-full px-4 py-3 bg-gray-800 border border-gray-700 focus:border-indigo-500 rounded-lg text-white placeholder-gray-500 focus:outline-none transition resize-none h-24"
+            onChange={e => setNotes(e.target.value)}
+            placeholder={journalPrompt || "What's on your mind?"}
+            className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-gray-800 placeholder-gray-400 focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 focus:outline-none transition resize-none h-24 text-sm"
           />
         </div>
 
         <button
           type="submit"
-          disabled={loading}
-          className="w-full py-3 bg-indigo-600 hover:bg-indigo-500 disabled:opacity-60 text-white font-semibold rounded-lg transition-colors flex items-center justify-center gap-2"
+          disabled={loading || !selectedMood}
+          className="w-full py-3.5 bg-indigo-600 hover:bg-indigo-500 disabled:opacity-40 disabled:cursor-not-allowed text-white font-semibold rounded-xl transition-colors flex items-center justify-center gap-2"
         >
-          {loading ? 'Saving...' : 'Record Mood'}
-          {!loading && <ArrowRight size={18} />}
+          {loading ? 'Saving...' : <><span>Record Mood</span><ArrowRight size={18} /></>}
         </button>
       </form>
     </div>

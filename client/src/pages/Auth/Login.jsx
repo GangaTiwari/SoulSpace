@@ -5,7 +5,7 @@ import { Brain, Loader } from 'lucide-react';
 
 const Login = () => {
   const { login } = useAuth();
-  const [form, setForm] = useState({ email: '', password: '', anonymousId: '' });
+  const [form, setForm] = useState({ email: '', password: '' });
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
@@ -20,102 +20,92 @@ const Login = () => {
       await login(form);
       navigate('/');
     } catch (err) {
-      setError(err.response?.data?.message || 'Login failed');
+      setError(err.response?.data?.message || 'Invalid email or password.');
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-950 px-4">
-      <div className="w-full max-w-md">
-        <div className="text-center mb-12">
-          <div className="flex justify-center mb-4">
-            <div className="w-16 h-16 bg-indigo-600 rounded-lg flex items-center justify-center">
-              <Brain size={32} className="text-white" />
-            </div>
+    <div className="min-h-screen flex bg-[#F7F5F2]">
+      {/* Left panel */}
+      <div className="hidden lg:flex lg:w-1/2 bg-indigo-600 flex-col justify-between p-12">
+        <div className="flex items-center gap-3">
+          <div className="w-9 h-9 bg-white/20 rounded-xl flex items-center justify-center">
+            <Brain size={20} className="text-white" />
           </div>
-          <h1 className="text-3xl font-bold text-white mb-2">SoulSpace</h1>
-          <p className="text-gray-300">Your personal mental health sanctuary</p>
+          <span className="text-xl font-bold text-white">SoulSpace</span>
         </div>
+        <div>
+          <h2 className="text-4xl font-bold text-white leading-snug mb-4">
+            Your mental health<br />journey starts here.
+          </h2>
+          <p className="text-indigo-200 text-lg">
+            Track your mood, journal your thoughts, and connect with a supportive community.
+          </p>
+        </div>
+        <p className="text-indigo-300 text-sm">Safe. Private. Always here for you.</p>
+      </div>
 
-        <div className="bg-gray-900 border border-gray-800 rounded-xl p-6 mb-6">
-          <h2 className="text-xl font-semibold text-white mb-1">Welcome Back</h2>
-          <p className="text-gray-300 text-sm mb-6">Sign in to your account</p>
+      {/* Right panel */}
+      <div className="flex-1 flex items-center justify-center px-6 py-12">
+        <div className="w-full max-w-sm">
+          <div className="lg:hidden flex items-center gap-2 mb-10">
+            <div className="w-8 h-8 bg-indigo-600 rounded-xl flex items-center justify-center">
+              <Brain size={16} className="text-white" />
+            </div>
+            <span className="text-lg font-bold text-gray-900">SoulSpace</span>
+          </div>
+
+          <h1 className="text-2xl font-bold text-gray-900 mb-1">Welcome back</h1>
+          <p className="text-gray-500 text-sm mb-8">Sign in to continue your journey</p>
+
+          {error && (
+            <div className="bg-red-50 border border-red-200 text-red-600 text-sm rounded-xl px-4 py-3 mb-6">
+              {error}
+            </div>
+          )}
 
           <form onSubmit={handleSubmit} className="space-y-4">
-            {error && <p className="text-xs text-gray-600 text-center mt-6">{error}</p>}
-
             <div>
-              <label className="block text-sm font-medium text-gray-300 mb-2">Email</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1.5">Email</label>
               <input
                 type="email"
                 name="email"
                 placeholder="you@example.com"
                 value={form.email}
                 onChange={handleChange}
-                autoComplete="email"
-                className="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-lg text-white placeholder-gray-500 focus:border-indigo-500 focus:outline-none transition"
+                required
+                className="w-full px-4 py-3 bg-white border border-gray-200 rounded-xl text-gray-900 placeholder-gray-400 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100 focus:outline-none transition"
               />
             </div>
-
             <div>
-              <label className="block text-sm font-medium text-gray-300 mb-2">Password</label>
+              <div className="flex items-center justify-between mb-1.5">
+                <label className="block text-sm font-medium text-gray-700">Password</label>
+                <a href="#" className="text-xs text-indigo-600 hover:text-indigo-500 transition">Forgot password?</a>
+              </div>
               <input
                 type="password"
                 name="password"
-                placeholder="Password"
+                placeholder="Enter your password"
                 value={form.password}
                 onChange={handleChange}
-                autoComplete="current-password"
-                className="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-lg text-white placeholder-gray-500 focus:border-indigo-500 focus:outline-none transition"
+                required
+                className="w-full px-4 py-3 bg-white border border-gray-200 rounded-xl text-gray-900 placeholder-gray-400 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100 focus:outline-none transition"
               />
             </div>
-
             <button
               type="submit"
               disabled={loading}
-              className="w-full py-3 bg-indigo-600 hover:bg-indigo-500 disabled:opacity-60 disabled:cursor-not-allowed text-white font-semibold rounded-lg transition-colors flex items-center justify-center gap-2"
+              className="w-full py-3 bg-indigo-600 hover:bg-indigo-500 disabled:opacity-50 text-white font-semibold rounded-xl transition-colors flex items-center justify-center gap-2 mt-2"
             >
-              {loading ? (
-                <>
-                  <Loader size={18} className="animate-spin" />
-                  Signing in...
-                </>
-              ) : (
-                'Sign In'
-              )}
+              {loading ? <><Loader size={16} className="animate-spin" /> Signing in...</> : 'Sign In'}
             </button>
           </form>
 
-          <div className="relative my-6">
-            <div className="absolute inset-0 flex items-center">
-              <div className="w-full border-t border-gray-700"></div>
-            </div>
-            <div className="relative flex justify-center text-sm">
-              <span className="px-2 bg-gray-900 text-gray-500">or</span>
-            </div>
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium text-gray-300 mb-2">Guest Login</label>
-            <input
-              type="text"
-              name="anonymousId"
-              placeholder="Enter any ID to continue"
-              value={form.anonymousId}
-              onChange={handleChange}
-              className="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-lg text-white placeholder-gray-500 focus:border-indigo-500 focus:outline-none transition"
-            />
-          </div>
-        </div>
-
-        <div className="text-center">
-          <p className="text-gray-300 text-sm">
+          <p className="text-center text-gray-500 text-sm mt-8">
             Don't have an account?{' '}
-            <Link to="/register" className="text-indigo-400 hover:text-indigo-300 font-semibold transition-colors">
-              Sign up
-            </Link>
+            <Link to="/register" className="text-indigo-600 hover:text-indigo-500 font-semibold transition">Sign up</Link>
           </p>
         </div>
       </div>
