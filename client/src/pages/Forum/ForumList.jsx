@@ -46,7 +46,8 @@ const ForumList = () => {
     } catch { setPosts([]); }
   };
 
-  useEffect(() => { fetchPosts(); }, [filter, sortBy, searchTerm]);
+ // eslint-disable-next-line react-hooks/exhaustive-deps
+useEffect(() => { fetchPosts(); }, [filter, sortBy, searchTerm]);
 
   const handleVote = async (postId) => {
     try { await API.post(`/forum/${postId}/reactions`, { reactionType: 'heart' }); fetchPosts(); } catch {}
