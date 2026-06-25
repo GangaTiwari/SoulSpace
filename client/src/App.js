@@ -22,11 +22,11 @@ import NotFound from './pages/NotFound';
 const App = () => (
   <AuthProvider>
     <Router>
-      <div className="flex h-screen bg-gray-100 dark:bg-gray-950 transition-colors duration-300">
+      <div className="flex h-screen bg-gray-950">
         <Navigation />
         <div className="flex-1 lg:pl-64">
           <div className="lg:hidden h-16" /> {/* Spacer for mobile header */}
-          <main className="flex-1 p-4 md:p-8 bg-white dark:bg-gray-900 min-h-screen transition-colors duration-300 rounded-tl-3xl shadow-xl">
+          <main className="flex-1 p-6 md:p-8 bg-gray-950 min-h-screen">
             <Routes>
               <Route path="/login" element={<Login />} />
               <Route path="/register" element={<Register />} />

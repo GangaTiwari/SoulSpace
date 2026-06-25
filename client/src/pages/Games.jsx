@@ -1,10 +1,22 @@
 import React, { useState, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { useAuth } from '../context/AuthContext';
 import axios from '../api/axios';
+import {
+  ArrowDown,
+  ArrowLeft,
+  ArrowRight,
+  ArrowUp,
+  Brain,
+  Check,
+  Clock,
+  Gamepad2,
+  Info,
+  Loader,
+  RotateCcw,
+  Trophy,
+  X
+} from 'lucide-react';
 
 const Games = () => {
-  const { user } = useAuth();
   const [selectedCategory, setSelectedCategory] = useState(null);
   const [selectedGame, setSelectedGame] = useState(null);
   const [isGameActive, setIsGameActive] = useState(false);
@@ -16,15 +28,12 @@ const Games = () => {
   const [successMessage, setSuccessMessage] = useState(null);
   const [showInstructions, setShowInstructions] = useState(false);
 
-  // Game States
   const [game2048Board, setGame2048Board] = useState(Array(4).fill().map(() => Array(4).fill(0)));
   const [game2048Score, setGame2048Score] = useState(0);
   const [memoryCards, setMemoryCards] = useState([]);
   const [memoryFlipped, setMemoryFlipped] = useState([]);
   const [memoryMatched, setMemoryMatched] = useState([]);
   const [memoryCanFlip, setMemoryCanFlip] = useState(true);
-  const [colorMatchBoard, setColorMatchBoard] = useState([]);
-  const [bubbleBoard, setBubbleBoard] = useState([]);
 
   useEffect(() => {
     loadGameHistory();
@@ -34,15 +43,11 @@ const Games = () => {
     try {
       setLoading(true);
       setError(null);
-      console.log('Loading game history...');
       const response = await axios.get('/games/recent');
-      console.log('Game history response:', response.data);
-      let data = response.data && Array.isArray(response.data.data) ? response.data.data : [];
+      const data = response.data && Array.isArray(response.data.data) ? response.data.data : [];
       setGameHistory(data);
     } catch (error) {
       console.error('Error loading game history:', error);
-      console.error('Error response:', error.response);
-      console.error('Error message:', error.message);
       if (error.response?.status === 401) {
         setError('Please log in to view game history');
       } else if (error.response?.status === 500) {
@@ -56,25 +61,6 @@ const Games = () => {
     }
   };
 
-  const saveGameResult = async (game, score, time) => {
-    try {
-      const gameData = {
-        gameName: game.name,
-        score: score,
-        time: time,
-        category: 'cognitive',
-        difficulty: game.difficulty
-      };
-      
-      await axios.post('/games/save', gameData);
-      await loadGameHistory();
-    } catch (error) {
-      console.error('Error saving game result:', error);
-      setError('Failed to save game result');
-    }
-  };
-
-  // 2048 Game Logic
   const initialize2048 = () => {
     const newBoard = Array(4).fill().map(() => Array(4).fill(0));
     addRandomTile(newBoard);
@@ -107,22 +93,22 @@ const Games = () => {
       for (let i = 0; i < 4; i++) {
         const row = newBoard[i];
         const merged = new Array(4).fill(false);
-        
+
         if (direction === 'left') {
           for (let j = 1; j < 4; j++) {
             if (row[j] !== 0) {
               let k = j;
-              while (k > 0 && (row[k-1] === 0 || (row[k-1] === row[k] && !merged[k-1]))) {
-                if (row[k-1] === 0) {
-                  row[k-1] = row[k];
+              while (k > 0 && (row[k - 1] === 0 || (row[k - 1] === row[k] && !merged[k - 1]))) {
+                if (row[k - 1] === 0) {
+                  row[k - 1] = row[k];
                   row[k] = 0;
                   k--;
                   moved = true;
-                } else if (row[k-1] === row[k] && !merged[k-1]) {
-                  row[k-1] *= 2;
-                  score += row[k-1];
+                } else if (row[k - 1] === row[k] && !merged[k - 1]) {
+                  row[k - 1] *= 2;
+                  score += row[k - 1];
                   row[k] = 0;
-                  merged[k-1] = true;
+                  merged[k - 1] = true;
                   moved = true;
                   break;
                 }
@@ -133,17 +119,17 @@ const Games = () => {
           for (let j = 2; j >= 0; j--) {
             if (row[j] !== 0) {
               let k = j;
-              while (k < 3 && (row[k+1] === 0 || (row[k+1] === row[k] && !merged[k+1]))) {
-                if (row[k+1] === 0) {
-                  row[k+1] = row[k];
+              while (k < 3 && (row[k + 1] === 0 || (row[k + 1] === row[k] && !merged[k + 1]))) {
+                if (row[k + 1] === 0) {
+                  row[k + 1] = row[k];
                   row[k] = 0;
                   k++;
                   moved = true;
-                } else if (row[k+1] === row[k] && !merged[k+1]) {
-                  row[k+1] *= 2;
-                  score += row[k+1];
+                } else if (row[k + 1] === row[k] && !merged[k + 1]) {
+                  row[k + 1] *= 2;
+                  score += row[k + 1];
                   row[k] = 0;
-                  merged[k+1] = true;
+                  merged[k + 1] = true;
                   moved = true;
                   break;
                 }
@@ -156,22 +142,22 @@ const Games = () => {
       for (let j = 0; j < 4; j++) {
         const col = [newBoard[0][j], newBoard[1][j], newBoard[2][j], newBoard[3][j]];
         const merged = new Array(4).fill(false);
-        
+
         if (direction === 'up') {
           for (let i = 1; i < 4; i++) {
             if (col[i] !== 0) {
               let k = i;
-              while (k > 0 && (col[k-1] === 0 || (col[k-1] === col[k] && !merged[k-1]))) {
-                if (col[k-1] === 0) {
-                  col[k-1] = col[k];
+              while (k > 0 && (col[k - 1] === 0 || (col[k - 1] === col[k] && !merged[k - 1]))) {
+                if (col[k - 1] === 0) {
+                  col[k - 1] = col[k];
                   col[k] = 0;
                   k--;
                   moved = true;
-                } else if (col[k-1] === col[k] && !merged[k-1]) {
-                  col[k-1] *= 2;
-                  score += col[k-1];
+                } else if (col[k - 1] === col[k] && !merged[k - 1]) {
+                  col[k - 1] *= 2;
+                  score += col[k - 1];
                   col[k] = 0;
-                  merged[k-1] = true;
+                  merged[k - 1] = true;
                   moved = true;
                   break;
                 }
@@ -182,17 +168,17 @@ const Games = () => {
           for (let i = 2; i >= 0; i--) {
             if (col[i] !== 0) {
               let k = i;
-              while (k < 3 && (col[k+1] === 0 || (col[k+1] === col[k] && !merged[k+1]))) {
-                if (col[k+1] === 0) {
-                  col[k+1] = col[k];
+              while (k < 3 && (col[k + 1] === 0 || (col[k + 1] === col[k] && !merged[k + 1]))) {
+                if (col[k + 1] === 0) {
+                  col[k + 1] = col[k];
                   col[k] = 0;
                   k++;
                   moved = true;
-                } else if (col[k+1] === col[k] && !merged[k+1]) {
-                  col[k+1] *= 2;
-                  score += col[k+1];
+                } else if (col[k + 1] === col[k] && !merged[k + 1]) {
+                  col[k + 1] *= 2;
+                  score += col[k + 1];
                   col[k] = 0;
-                  merged[k+1] = true;
+                  merged[k + 1] = true;
                   moved = true;
                   break;
                 }
@@ -200,7 +186,7 @@ const Games = () => {
             }
           }
         }
-        
+
         for (let i = 0; i < 4; i++) {
           newBoard[i][j] = col[i];
         }
@@ -211,12 +197,12 @@ const Games = () => {
       addRandomTile(newBoard);
       setGame2048Board(newBoard);
       setGame2048Score(prev => prev + score);
+      setGameScore(prev => prev + score);
     }
   };
 
-  // Memory Game Logic
   const initializeMemory = () => {
-    const symbols = ['🎮', '🎲', '🎯', '🎪', '🎨', '🎭', '🎪', '🎯'];
+    const symbols = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H'];
     const cards = [...symbols, ...symbols]
       .sort(() => Math.random() - 0.5)
       .map((symbol, index) => ({
@@ -225,7 +211,7 @@ const Games = () => {
         isFlipped: false,
         isMatched: false
       }));
-    
+
     setMemoryCards(cards);
     setMemoryFlipped([]);
     setMemoryMatched([]);
@@ -234,11 +220,11 @@ const Games = () => {
 
   const flipCard = (cardId) => {
     if (!memoryCanFlip) return;
-    
+
     const card = memoryCards.find(c => c.id === cardId);
     if (!card || card.isFlipped || card.isMatched) return;
 
-    const newCards = memoryCards.map(c => 
+    const newCards = memoryCards.map(c =>
       c.id === cardId ? { ...c, isFlipped: true } : c
     );
     setMemoryCards(newCards);
@@ -248,15 +234,14 @@ const Games = () => {
 
     if (newFlipped.length === 2) {
       setMemoryCanFlip(false);
-      
+
       const [firstId, secondId] = newFlipped;
       const firstCard = newCards.find(c => c.id === firstId);
       const secondCard = newCards.find(c => c.id === secondId);
 
       if (firstCard.symbol === secondCard.symbol) {
-        // Match found
-        const updatedCards = newCards.map(c => 
-          c.id === firstId || c.id === secondId 
+        const updatedCards = newCards.map(c =>
+          c.id === firstId || c.id === secondId
             ? { ...c, isMatched: true }
             : c
         );
@@ -265,18 +250,16 @@ const Games = () => {
         setMemoryFlipped([]);
         setMemoryCanFlip(true);
         setGameScore(prev => prev + 10);
-        
-        // Check if game is complete
+
         if (memoryMatched.length + 2 === 16) {
           setTimeout(() => {
             endGame();
           }, 500);
         }
       } else {
-        // No match
         setTimeout(() => {
-          const resetCards = newCards.map(c => 
-            c.id === firstId || c.id === secondId 
+          const resetCards = newCards.map(c =>
+            c.id === firstId || c.id === secondId
               ? { ...c, isFlipped: false }
               : c
           );
@@ -288,101 +271,25 @@ const Games = () => {
     }
   };
 
-  // Color Match Game Logic
-  const initializeColorMatch = () => {
-    const colors = ['red', 'blue', 'green', 'yellow', 'purple', 'orange'];
-    const board = Array(8).fill().map(() => 
-      Array(8).fill().map(() => colors[Math.floor(Math.random() * colors.length)])
-    );
-    setColorMatchBoard(board);
-  };
-
-  const swapColors = (row1, col1, row2, col2) => {
-    const newBoard = JSON.parse(JSON.stringify(colorMatchBoard));
-    [newBoard[row1][col1], newBoard[row2][col2]] = [newBoard[row2][col2], newBoard[row1][col1]];
-    setColorMatchBoard(newBoard);
-    checkMatches(newBoard);
-  };
-
-  const checkMatches = (board) => {
-    let matches = 0;
-    // Check horizontal matches
-    for (let i = 0; i < 8; i++) {
-      for (let j = 0; j < 6; j++) {
-        if (board[i][j] === board[i][j+1] && board[i][j] === board[i][j+2]) {
-          matches++;
-        }
-      }
-    }
-    // Check vertical matches
-    for (let i = 0; i < 6; i++) {
-      for (let j = 0; j < 8; j++) {
-        if (board[i][j] === board[i+1][j] && board[i][j] === board[i+2][j]) {
-          matches++;
-        }
-      }
-    }
-    if (matches > 0) {
-      setGameScore(prev => prev + matches * 5);
-    }
-  };
-
-  // Bubble Pop Game Logic
-  const initializeBubblePop = () => {
-    const colors = ['red', 'blue', 'green', 'yellow', 'purple'];
-    const board = Array(10).fill().map(() => 
-      Array(8).fill().map(() => colors[Math.floor(Math.random() * colors.length)])
-    );
-    setBubbleBoard(board);
-  };
-
-  const popBubbles = (row, col) => {
-    const color = bubbleBoard[row][col];
-    if (!color) return;
-    
-    const newBoard = JSON.parse(JSON.stringify(bubbleBoard));
-    const toPop = new Set();
-    
-    const floodFill = (r, c) => {
-      if (r < 0 || r >= 10 || c < 0 || c >= 8 || newBoard[r][c] !== color) return;
-      toPop.add(`${r},${c}`);
-      newBoard[r][c] = null;
-      
-      floodFill(r+1, c);
-      floodFill(r-1, c);
-      floodFill(r, c+1);
-      floodFill(r, c-1);
-    };
-    
-    floodFill(row, col);
-    
-    if (toPop.size >= 2) {
-      setBubbleBoard(newBoard);
-      setGameScore(prev => prev + toPop.size * 2);
-    }
-  };
-
   const gameCategories = [
     {
       id: 'puzzle',
       name: 'Puzzle Games',
-      emoji: '🧩',
-      color: 'from-blue-500 to-indigo-600',
-      bgColor: 'from-blue-50 to-indigo-50',
+      icon: Brain,
       description: 'Brain-teasing puzzle games to challenge your mind',
       games: [
         {
           id: '2048',
           name: '2048',
-          description: 'Slide tiles to combine them and reach 2048!',
+          description: 'Slide tiles to combine them and reach 2048.',
           duration: '5-15 min',
           difficulty: 'Medium',
           benefits: ['Improves strategic thinking', 'Enhances focus', 'Reduces stress'],
           instructions: [
-            'Use the arrow buttons to move tiles in any direction',
-            'When two tiles with the same number touch, they merge into one',
-            'Try to reach the 2048 tile!',
-            'You can continue playing beyond 2048 for higher scores'
+            'Use the arrow buttons to move tiles in any direction.',
+            'When two tiles with the same number touch, they merge into one.',
+            'Try to reach the 2048 tile.',
+            'You can continue playing beyond 2048 for higher scores.'
           ]
         },
         {
@@ -393,50 +300,10 @@ const Games = () => {
           difficulty: 'Easy',
           benefits: ['Improves memory', 'Enhances concentration', 'Reduces anxiety'],
           instructions: [
-            'Click on cards to flip them and reveal their symbols',
-            'Find two cards with matching symbols to make a pair',
-            'Try to remember where each symbol is located',
-            'Complete all pairs to win!'
-          ]
-        },
-        {
-          id: 'color-match',
-          name: 'Color Match',
-          description: 'Match 3 or more colors in a row',
-          duration: '5-10 min',
-          difficulty: 'Easy',
-          benefits: ['Improves pattern recognition', 'Reduces stress', 'Enhances focus'],
-          instructions: [
-            'Click on adjacent tiles to swap their positions',
-            'Create horizontal or vertical lines of 3 or more same-colored tiles',
-            'Matches will be automatically cleared and scored',
-            'Try to create as many matches as possible!'
-          ]
-        },
-        {
-          id: 'sudoku',
-          name: 'Sudoku',
-          description: 'Fill the grid so every row, column, and box contains 1-9',
-          duration: '10-30 min',
-          difficulty: 'Medium',
-          benefits: ['Improves logic', 'Enhances concentration', 'Fun challenge'],
-          instructions: [
-            'Fill the 9x9 grid with numbers 1-9',
-            'Each row, column, and 3x3 box must contain each number exactly once',
-            'No guessing! Use logic to solve the puzzle.'
-          ]
-        },
-        {
-          id: 'tetris',
-          name: 'Tetris',
-          description: 'Stack falling blocks to clear lines',
-          duration: '5-20 min',
-          difficulty: 'Easy',
-          benefits: ['Improves spatial reasoning', 'Quick fun', 'Classic game'],
-          instructions: [
-            'Move and rotate falling blocks to complete horizontal lines',
-            'Completed lines disappear and score points',
-            'Game ends when the blocks reach the top'
+            'Click on cards to flip them and reveal their symbols.',
+            'Find two cards with matching symbols to make a pair.',
+            'Try to remember where each symbol is located.',
+            'Complete all pairs to win.'
           ]
         }
       ]
@@ -444,36 +311,34 @@ const Games = () => {
     {
       id: 'arcade',
       name: 'Arcade Games',
-      emoji: '🎮',
-      color: 'from-green-500 to-teal-600',
-      bgColor: 'from-green-50 to-teal-50',
-      description: 'Fast-paced arcade games for quick fun',
+      icon: Gamepad2,
+      description: 'Fast-paced games for a quick reset',
       games: [
         {
           id: 'bubble-pop',
           name: 'Bubble Pop',
-          description: 'Pop groups of colored bubbles',
+          description: 'Pop groups of matching bubbles',
           duration: '3-8 min',
           difficulty: 'Easy',
           benefits: ['Quick stress relief', 'Improves reflexes', 'Fun distraction'],
           instructions: [
-            'Click on groups of 2 or more same-colored bubbles',
-            'Connected bubbles of the same color will pop together',
-            'Larger groups give you more points',
-            'Clear as many bubbles as you can!'
+            'Click on groups of two or more matching bubbles.',
+            'Connected bubbles of the same color pop together.',
+            'Larger groups give you more points.',
+            'Clear as many bubbles as you can.'
           ]
         },
         {
           id: 'snake',
           name: 'Snake',
-          description: 'Eat food, grow longer, avoid hitting yourself!',
+          description: 'Eat food, grow longer, avoid hitting yourself',
           duration: '2-10 min',
           difficulty: 'Easy',
           benefits: ['Improves reflexes', 'Classic arcade fun'],
           instructions: [
-            'Use arrow keys to move the snake',
-            'Eat food to grow longer',
-            'Dont run into yourself or the walls!'
+            'Use arrow keys to move the snake.',
+            'Eat food to grow longer.',
+            'Avoid running into yourself or the walls.'
           ]
         }
       ]
@@ -487,7 +352,7 @@ const Games = () => {
     setGameTime(0);
     setError(null);
     setShowInstructions(true);
-    
+
     if (game.id === '2048') {
       initialize2048();
     } else if (game.id === 'memory') {
@@ -496,19 +361,20 @@ const Games = () => {
   };
 
   const endGame = async () => {
+    if (!selectedGame) return;
     const finalScore = selectedGame.id === '2048' ? game2048Score : gameScore;
     const gameData = {
       gameName: selectedGame.name,
       score: finalScore,
       time: gameTime,
       category: 'cognitive',
-      difficulty: 'Medium'
+      difficulty: selectedGame.difficulty || 'Medium'
     };
 
     try {
       await axios.post('/games/save', gameData);
       await loadGameHistory();
-      setSuccessMessage('Game result saved successfully!');
+      setSuccessMessage('Game result saved successfully.');
       setTimeout(() => setSuccessMessage(null), 3000);
     } catch (error) {
       console.error('Error saving game result:', error);
@@ -547,71 +413,47 @@ const Games = () => {
     });
   };
 
+  const renderTileClass = (cell) => {
+    if (cell === 0) return 'bg-gray-800 text-gray-800';
+    if (cell < 32) return 'bg-gray-700 text-white';
+    if (cell < 256) return 'bg-indigo-600/20 text-indigo-400 border border-indigo-500';
+    return 'bg-indigo-600 text-white';
+  };
+
   const renderGame = () => {
     if (!selectedGame) return null;
 
     if (selectedGame.id === '2048') {
       return (
-        <div className="bg-gradient-to-br from-gray-50 to-gray-100 rounded-xl p-8 shadow-lg">
+        <div className="bg-gray-800 border border-gray-700 rounded-xl p-6">
           <div className="grid grid-cols-4 gap-3 mb-6 max-w-xs mx-auto">
             {game2048Board.map((row, i) =>
               row.map((cell, j) => (
-                <motion.div
+                <div
                   key={`${i}-${j}`}
-                  initial={{ scale: 0 }}
-                  animate={{ scale: 1 }}
-                  transition={{ duration: 0.2, delay: (i * 4 + j) * 0.05 }}
-                  className={`w-16 h-16 rounded-lg flex items-center justify-center text-xl font-bold shadow-md transition-all duration-200 ${
-                    cell === 0 ? 'bg-gray-200' : 
-                    cell === 2 ? 'bg-red-400 text-white' :
-                    cell === 4 ? 'bg-orange-400 text-white' :
-                    cell === 8 ? 'bg-yellow-400 text-white' :
-                    cell === 16 ? 'bg-green-400 text-white' :
-                    cell === 32 ? 'bg-blue-400 text-white' :
-                    cell === 64 ? 'bg-purple-400 text-white' :
-                    cell === 128 ? 'bg-pink-400 text-white' :
-                    cell === 256 ? 'bg-indigo-400 text-white' :
-                    'bg-gray-800 text-white'
-                  }`}
+                  className={`w-16 h-16 rounded-lg flex items-center justify-center text-xl font-bold transition-colors ${renderTileClass(cell)}`}
                 >
                   {cell || ''}
-                </motion.div>
+                </div>
               ))
             )}
           </div>
-          <div className="flex gap-3 justify-center">
-            <motion.button 
-              whileHover={{ scale: 1.1 }}
-              whileTap={{ scale: 0.95 }}
-              onClick={() => move2048('up')} 
-              className="px-6 py-3 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-lg shadow-lg hover:from-blue-600 hover:to-blue-700 transition-all duration-200"
-            >
-              ↑
-            </motion.button>
-            <motion.button 
-              whileHover={{ scale: 1.1 }}
-              whileTap={{ scale: 0.95 }}
-              onClick={() => move2048('down')} 
-              className="px-6 py-3 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-lg shadow-lg hover:from-blue-600 hover:to-blue-700 transition-all duration-200"
-            >
-              ↓
-            </motion.button>
-            <motion.button 
-              whileHover={{ scale: 1.1 }}
-              whileTap={{ scale: 0.95 }}
-              onClick={() => move2048('left')} 
-              className="px-6 py-3 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-lg shadow-lg hover:from-blue-600 hover:to-blue-700 transition-all duration-200"
-            >
-              ←
-            </motion.button>
-            <motion.button 
-              whileHover={{ scale: 1.1 }}
-              whileTap={{ scale: 0.95 }}
-              onClick={() => move2048('right')} 
-              className="px-6 py-3 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-lg shadow-lg hover:from-blue-600 hover:to-blue-700 transition-all duration-200"
-            >
-              →
-            </motion.button>
+          <div className="flex flex-wrap gap-3 justify-center">
+            {[
+              { direction: 'up', icon: ArrowUp, label: 'Up' },
+              { direction: 'down', icon: ArrowDown, label: 'Down' },
+              { direction: 'left', icon: ArrowLeft, label: 'Left' },
+              { direction: 'right', icon: ArrowRight, label: 'Right' }
+            ].map(({ direction, icon: Icon, label }) => (
+              <button
+                key={direction}
+                onClick={() => move2048(direction)}
+                className="inline-flex items-center gap-2 px-5 py-3 bg-indigo-600 hover:bg-indigo-500 text-white rounded-lg transition-colors"
+                aria-label={label}
+              >
+                <Icon size={18} />
+              </button>
+            ))}
           </div>
         </div>
       );
@@ -619,26 +461,24 @@ const Games = () => {
 
     if (selectedGame.id === 'memory') {
       return (
-        <div className="bg-gradient-to-br from-gray-50 to-gray-100 rounded-xl p-8 shadow-lg">
+        <div className="bg-gray-800 border border-gray-700 rounded-xl p-6">
           <div className="grid grid-cols-4 gap-3 max-w-xs mx-auto">
             {memoryCards.map(card => (
-              <motion.div
+              <button
                 key={card.id}
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
                 onClick={() => flipCard(card.id)}
-                className={`w-16 h-16 rounded-lg flex items-center justify-center text-2xl cursor-pointer transition-all duration-300 shadow-lg ${
+                className={`w-16 h-16 rounded-lg flex items-center justify-center text-2xl font-bold transition-colors ${
                   card.isFlipped || card.isMatched
-                    ? 'bg-gradient-to-br from-blue-500 to-blue-600 text-white transform rotateY(0deg)'
-                    : 'bg-gradient-to-br from-gray-300 to-gray-400 hover:from-gray-400 hover:to-gray-500 text-gray-600'
+                    ? 'bg-indigo-600 text-white'
+                    : 'bg-gray-900 hover:bg-gray-700 text-gray-500 border border-gray-700'
                 }`}
               >
                 {(card.isFlipped || card.isMatched) ? card.symbol : '?'}
-              </motion.div>
+              </button>
             ))}
           </div>
           <div className="text-center mt-6">
-            <p className="text-gray-600">
+            <p className="text-gray-300">
               Matched: {memoryMatched.length / 2} / 8 pairs
             </p>
           </div>
@@ -647,320 +487,237 @@ const Games = () => {
     }
 
     return (
-      <div className="bg-gradient-to-br from-gray-50 to-gray-100 rounded-xl p-8 shadow-lg">
+      <div className="bg-gray-800 border border-gray-700 rounded-xl p-8">
         <div className="text-center">
-          <div className="text-6xl mb-4">🎮</div>
-          <h3 className="text-xl font-semibold text-gray-800 mb-2">{selectedGame.name}</h3>
-          <p className="text-gray-600">Coming Soon!</p>
+          <Gamepad2 size={48} className="mx-auto mb-4 text-gray-600" />
+          <h3 className="text-xl font-semibold text-white mb-2">{selectedGame.name}</h3>
+          <p className="text-gray-300">Coming soon.</p>
         </div>
       </div>
     );
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-indigo-100 via-purple-100 to-pink-100 dark:from-gray-900 dark:to-gray-950 p-6 font-sans">
+    <div className="min-h-screen bg-gray-950 p-6">
       <div className="max-w-7xl mx-auto">
-        {/* Header */}
-        <motion.div 
-          initial={{ opacity: 0, y: -30 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8 }}
-          className="mb-12 text-center"
-        >
-          <h1 className="text-5xl font-extrabold bg-gradient-to-r from-blue-500 to-purple-500 bg-clip-text text-transparent mb-4 flex items-center justify-center gap-2">
-            <span>Fun Games</span>
-            <span className="text-4xl">🎮</span>
+        <div className="mb-12">
+          <h1 className="text-3xl font-bold text-white mb-2 flex items-center gap-3">
+            <Gamepad2 size={30} className="text-indigo-500" />
+            Fun Games
           </h1>
-          <p className="text-xl text-gray-600 dark:text-gray-300 max-w-2xl mx-auto">
-            Play these engaging games to distract yourself, have fun, and improve your mental well-being!
+          <p className="text-gray-300 max-w-2xl">
+            Play focused games to reset your attention and support your mental well-being.
           </p>
-        </motion.div>
+        </div>
 
-        {/* Error Message */}
-        <AnimatePresence>
-          {error && (
-            <motion.div 
-              initial={{ opacity: 0, y: -20 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -20 }}
-              className="bg-red-100 border border-red-400 text-red-700 px-6 py-4 rounded-xl mb-8 max-w-2xl mx-auto"
-            >
-              <div className="flex items-center">
-                <span className="text-xl mr-3">⚠️</span>
-                {error}
-              </div>
-            </motion.div>
-          )}
-        </AnimatePresence>
+        {error && <p className="text-xs text-gray-600 text-center mt-6">{error}</p>}
+        {successMessage && <p className="text-xs text-gray-600 text-center mt-6">{successMessage}</p>}
 
-        {/* Success Message */}
-        <AnimatePresence>
-          {successMessage && (
-            <motion.div
-              initial={{ opacity: 0, y: -20 }}
-              animate={{ opacity: 1, y: 0 }}
-              className="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded mb-4"
-            >
-              {successMessage}
-            </motion.div>
-          )}
-        </AnimatePresence>
-
-        {/* Game Categories */}
-        <motion.div 
-          initial={{ opacity: 0, y: 30 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, delay: 0.2 }}
-          className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-12"
-        >
-          {gameCategories.map((category, index) => (
-            <motion.div
-              key={category.id}
-              initial={{ opacity: 0, y: 30 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: 0.3 + index * 0.1 }}
-              whileHover={{ scale: 1.02, y: -5 }}
-              className={`bg-gradient-to-br ${category.bgColor} rounded-2xl p-8 border border-gray-200 cursor-pointer transition-all duration-300 shadow-lg hover:shadow-xl`}
-              onClick={() => setSelectedCategory(category)}
-            >
-              <div className="text-6xl mb-4">{category.emoji}</div>
-              <h3 className="text-2xl font-bold text-gray-800 mb-3">{category.name}</h3>
-              <p className="text-gray-600 mb-4 text-lg">{category.description}</p>
-              <div className="flex items-center justify-between">
-                <span className="text-sm text-gray-500 bg-white px-3 py-1 rounded-full">
-                  {category.games.length} games available
-                </span>
-                <span className="text-2xl">→</span>
-              </div>
-            </motion.div>
-          ))}
-        </motion.div>
-
-        {/* Game List */}
-        <AnimatePresence>
-          {selectedCategory && (
-            <motion.div 
-              initial={{ opacity: 0, y: 30 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: 30 }}
-              transition={{ duration: 0.5 }}
-              className="bg-white dark:bg-gray-900 rounded-2xl shadow-2xl p-8 mb-12"
-            >
-              <div className="flex items-center justify-between mb-8">
-                <div>
-                  <h2 className="text-3xl font-bold text-gray-800 mb-2">
-                    {selectedCategory.emoji} {selectedCategory.name}
-                  </h2>
-                  <p className="text-gray-600 text-lg">{selectedCategory.description}</p>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-12">
+          {gameCategories.map((category) => {
+            const Icon = category.icon;
+            return (
+              <button
+                key={category.id}
+                className="bg-gray-900 border border-gray-800 rounded-xl p-6 text-left hover:bg-gray-800 transition-colors"
+                onClick={() => setSelectedCategory(category)}
+              >
+                <Icon size={32} className="text-indigo-500 mb-4" />
+                <h2 className="text-xl font-semibold text-white mb-3">{category.name}</h2>
+                <p className="text-gray-300 mb-4">{category.description}</p>
+                <div className="flex items-center justify-between">
+                  <span className="text-sm text-gray-500">
+                    {category.games.length} games available
+                  </span>
+                  <ArrowRight size={20} className="text-indigo-500" />
                 </div>
-                <motion.button
-                  whileHover={{ scale: 1.1 }}
-                  whileTap={{ scale: 0.9 }}
-                  onClick={() => setSelectedCategory(null)}
-                  className="text-gray-500 hover:text-gray-700 text-2xl p-2"
-                >
-                  ✕
-                </motion.button>
-              </div>
-              
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {selectedCategory.games.map((game, index) => (
-                  <motion.div
-                    key={game.id}
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.5, delay: index * 0.1 }}
-                    whileHover={{ scale: 1.03, y: -5 }}
-                    className="bg-gradient-to-br from-gray-50 to-gray-100 rounded-xl p-6 border border-gray-200 shadow-lg hover:shadow-xl transition-all duration-300"
-                  >
-                    <h3 className="text-xl font-bold text-gray-800 mb-3">{game.name}</h3>
-                    <p className="text-gray-600 mb-4">{game.description}</p>
-                    <div className="flex items-center gap-4 mb-4 text-sm text-gray-500">
-                      <span className="bg-white px-2 py-1 rounded-full">⏱️ {game.duration}</span>
-                      <span className="bg-white px-2 py-1 rounded-full">📊 {game.difficulty}</span>
-                    </div>
-                    <div className="mb-6">
-                      <h4 className="text-sm font-semibold text-gray-700 mb-2">Benefits:</h4>
-                      <ul className="text-sm text-gray-600 space-y-1">
-                        {game.benefits.map((benefit, index) => (
-                          <li key={index} className="flex items-center">
-                            <span className="text-green-500 mr-2">✓</span>
-                            {benefit}
-                          </li>
-                        ))}
-                      </ul>
-                    </div>
-                    <motion.button
-                      whileHover={{ scale: 1.05 }}
-                      whileTap={{ scale: 0.95 }}
-                      onClick={() => startGame(game)}
-                      className="w-full bg-gradient-to-r from-blue-500 to-purple-600 text-white py-3 rounded-lg hover:from-blue-600 hover:to-purple-700 transition-all duration-300 font-semibold shadow-lg"
-                    >
-                      Play Game
-                    </motion.button>
-                  </motion.div>
-                ))}
-              </div>
-            </motion.div>
-          )}
-        </AnimatePresence>
+              </button>
+            );
+          })}
+        </div>
 
-        {/* Active Game */}
-        <AnimatePresence>
-          {isGameActive && selectedGame && (
-            <motion.div 
-              initial={{ opacity: 0, scale: 0.8 }}
-              animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0, scale: 0.8 }}
-              transition={{ duration: 0.5 }}
-              className="bg-white dark:bg-gray-900 rounded-2xl shadow-2xl p-8 mb-12"
-            >
-              {/* Instructions Modal */}
-              <AnimatePresence>
-                {showInstructions && (
-                  <motion.div
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    exit={{ opacity: 0 }}
-                    className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4"
+        {selectedCategory && (
+          <div className="bg-gray-900 border border-gray-800 rounded-xl p-6 mb-12">
+            <div className="flex items-center justify-between mb-8">
+              <div>
+                <h2 className="text-xl font-semibold text-white mb-2">
+                  {selectedCategory.name}
+                </h2>
+                <p className="text-gray-300">{selectedCategory.description}</p>
+              </div>
+              <button
+                onClick={() => setSelectedCategory(null)}
+                className="text-gray-500 hover:text-gray-300 p-2 bg-gray-800 hover:bg-gray-700 rounded-lg"
+                aria-label="Close category"
+              >
+                <X size={20} />
+              </button>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {selectedCategory.games.map((game) => (
+                <div
+                  key={game.id}
+                  className="bg-gray-800 border border-gray-700 rounded-xl p-6"
+                >
+                  <h3 className="text-xl font-semibold text-white mb-3">{game.name}</h3>
+                  <p className="text-gray-300 mb-4">{game.description}</p>
+                  <div className="flex items-center gap-4 mb-4 text-sm text-gray-500">
+                    <span className="inline-flex items-center gap-1 bg-gray-900 px-2 py-1 rounded-lg">
+                      <Clock size={14} />
+                      {game.duration}
+                    </span>
+                    <span className="inline-flex items-center gap-1 bg-gray-900 px-2 py-1 rounded-lg">
+                      <Trophy size={14} />
+                      {game.difficulty}
+                    </span>
+                  </div>
+                  <div className="mb-6">
+                    <h4 className="text-sm font-semibold text-gray-300 mb-2">Benefits</h4>
+                    <ul className="text-sm text-gray-300 space-y-1">
+                      {game.benefits.map((benefit, index) => (
+                        <li key={index} className="flex items-center gap-2">
+                          <Check size={14} className="text-indigo-500" />
+                          {benefit}
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                  <button
+                    onClick={() => startGame(game)}
+                    className="w-full bg-indigo-600 hover:bg-indigo-500 text-white py-3 rounded-lg transition-colors font-semibold"
+                  >
+                    Play Game
+                  </button>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {isGameActive && selectedGame && (
+          <div className="bg-gray-900 border border-gray-800 rounded-xl p-6 mb-12">
+            {showInstructions && (
+              <div
+                className="fixed inset-0 bg-gray-950/80 flex items-center justify-center z-50 p-4"
+                onClick={() => setShowInstructions(false)}
+              >
+                <div
+                  className="bg-gray-900 border border-gray-800 rounded-xl p-6 max-w-md w-full"
+                  onClick={(e) => e.stopPropagation()}
+                >
+                  <h3 className="text-xl font-semibold text-white mb-4">How to Play {selectedGame.name}</h3>
+                  <ul className="space-y-3 mb-6">
+                    {selectedGame.instructions.map((instruction, index) => (
+                      <li key={index} className="flex items-start gap-3">
+                        <span className="text-indigo-400 font-bold">{index + 1}.</span>
+                        <span className="text-gray-300">{instruction}</span>
+                      </li>
+                    ))}
+                  </ul>
+                  <button
                     onClick={() => setShowInstructions(false)}
+                    className="w-full bg-indigo-600 hover:bg-indigo-500 text-white py-3 rounded-lg transition-colors font-semibold"
                   >
-                    <motion.div
-                      initial={{ scale: 0.8, opacity: 0 }}
-                      animate={{ scale: 1, opacity: 1 }}
-                      exit={{ scale: 0.8, opacity: 0 }}
-                      className="bg-white dark:bg-gray-900 rounded-2xl p-8 max-w-md w-full shadow-2xl border border-gray-200 dark:border-gray-700"
-                      onClick={(e) => e.stopPropagation()}
-                    >
-                      <h3 className="text-2xl font-bold text-gray-800 dark:text-white mb-4">How to Play {selectedGame.name}</h3>
-                      <ul className="space-y-3 mb-6">
-                        {selectedGame.instructions.map((instruction, index) => (
-                          <li key={index} className="flex items-start">
-                            <span className="text-blue-500 font-bold mr-3">{index + 1}.</span>
-                            <span className="text-gray-700 dark:text-gray-200">{instruction}</span>
-                          </li>
-                        ))}
-                      </ul>
-                      <motion.button
-                        whileHover={{ scale: 1.05 }}
-                        whileTap={{ scale: 0.95 }}
-                        onClick={() => setShowInstructions(false)}
-                        className="w-full bg-gradient-to-r from-blue-500 to-purple-600 dark:from-blue-700 dark:to-purple-900 text-white py-3 rounded-lg hover:from-blue-600 hover:to-purple-700 dark:hover:from-blue-800 dark:hover:to-purple-800 transition-all duration-300 font-semibold"
-                      >
-                        Got it!
-                      </motion.button>
-                    </motion.div>
-                  </motion.div>
-                )}
-              </AnimatePresence>
-
-              <div className="text-center mb-8">
-                <h2 className="text-3xl font-bold text-gray-800 mb-2">{selectedGame.name}</h2>
-                <p className="text-gray-600 mb-6 text-lg">{selectedGame.description}</p>
-                <div className="flex justify-center gap-8 text-lg">
-                  <div className="bg-gradient-to-r from-green-100 to-green-200 px-6 py-3 rounded-xl">
-                    <span className="font-semibold text-green-800">Score: {gameScore}</span>
-                  </div>
-                  <div className="bg-gradient-to-r from-blue-100 to-blue-200 px-6 py-3 rounded-xl">
-                    <span className="font-semibold text-blue-800">Time: {formatTime(gameTime)}</span>
-                  </div>
+                    Got it
+                  </button>
                 </div>
               </div>
-              
-              {renderGame()}
-              
-              <div className="flex justify-center gap-4 mt-8">
-                <motion.button
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
-                  onClick={() => setShowInstructions(true)}
-                  className="bg-gradient-to-r from-gray-500 to-gray-600 text-white px-6 py-3 rounded-lg hover:from-gray-600 hover:to-gray-700 transition-all duration-300 font-semibold shadow-lg"
-                >
-                  📖 Instructions
-                </motion.button>
-                <motion.button
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
-                  onClick={endGame}
-                  className="bg-gradient-to-r from-red-500 to-red-600 text-white px-6 py-3 rounded-lg hover:from-red-600 hover:to-red-700 transition-all duration-300 font-semibold shadow-lg"
-                >
-                  End Game
-                </motion.button>
-              </div>
-            </motion.div>
-          )}
-        </AnimatePresence>
+            )}
 
-        {/* Game History */}
-        <motion.div 
-          initial={{ opacity: 0, y: 30 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, delay: 0.4 }}
-          className="bg-white dark:bg-gray-900 rounded-2xl shadow-2xl p-8"
-        >
+            <div className="text-center mb-8">
+              <h2 className="text-xl font-semibold text-white mb-2">{selectedGame.name}</h2>
+              <p className="text-gray-300 mb-6">{selectedGame.description}</p>
+              <div className="flex justify-center gap-4 text-sm">
+                <div className="bg-gray-800 border border-gray-700 px-6 py-3 rounded-lg">
+                  <span className="font-semibold text-white">Score: {selectedGame.id === '2048' ? game2048Score : gameScore}</span>
+                </div>
+                <div className="bg-gray-800 border border-gray-700 px-6 py-3 rounded-lg">
+                  <span className="font-semibold text-white">Time: {formatTime(gameTime)}</span>
+                </div>
+              </div>
+            </div>
+
+            {renderGame()}
+
+            <div className="flex justify-center gap-4 mt-8">
+              <button
+                onClick={() => setShowInstructions(true)}
+                className="inline-flex items-center gap-2 bg-gray-800 hover:bg-gray-700 text-gray-300 px-6 py-3 rounded-lg transition-colors font-semibold"
+              >
+                <Info size={18} />
+                Instructions
+              </button>
+              <button
+                onClick={endGame}
+                className="bg-indigo-600 hover:bg-indigo-500 text-white px-6 py-3 rounded-lg transition-colors font-semibold"
+              >
+                End Game
+              </button>
+            </div>
+          </div>
+        )}
+
+        <div className="bg-gray-900 border border-gray-800 rounded-xl p-6">
           <div className="flex items-center justify-between mb-8">
-            <h2 className="text-3xl font-bold text-gray-800">Recent Games</h2>
+            <h2 className="text-xl font-semibold text-white">Recent Games</h2>
             {loading && (
               <div className="flex items-center text-gray-500">
-                <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-blue-500 mr-2"></div>
+                <Loader size={18} className="animate-spin text-indigo-500 mr-2" />
                 Loading...
               </div>
             )}
           </div>
-          
+
           {gameHistory.length > 0 ? (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {gameHistory.map((game, index) => (
-                <motion.div
+                <div
                   key={index}
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.5, delay: index * 0.1 }}
-                  className="bg-gradient-to-br from-gray-50 to-gray-100 rounded-xl p-6 border border-gray-200 shadow-lg hover:shadow-xl transition-all duration-300"
+                  className="bg-gray-800 border border-gray-700 rounded-xl p-6"
                 >
-                  <h3 className="font-bold text-gray-800 mb-3 text-lg">{game.gameName}</h3>
-                  <div className="space-y-2 text-sm text-gray-600">
+                  <h3 className="font-semibold text-white mb-3 text-lg">{game.gameName}</h3>
+                  <div className="space-y-2 text-sm text-gray-300">
                     <div className="flex justify-between">
                       <span>Score:</span>
-                      <span className="font-semibold text-green-600">{game.score}</span>
+                      <span className="font-semibold text-indigo-400">{game.score}</span>
                     </div>
                     <div className="flex justify-between">
                       <span>Time:</span>
-                      <span className="font-semibold text-blue-600">{formatTime(game.time)}</span>
+                      <span className="font-semibold text-indigo-400">{formatTime(game.time)}</span>
                     </div>
                     <div className="flex justify-between">
                       <span>Date:</span>
-                      <span className="font-semibold">{formatDate(game.completedAt)}</span>
+                      <span className="font-semibold text-gray-300">{formatDate(game.completedAt)}</span>
                     </div>
                   </div>
-                </motion.div>
+                </div>
               ))}
             </div>
           ) : error ? (
             <div className="text-center py-12">
-              <div className="text-6xl mb-4">⚠️</div>
-              <h3 className="text-xl font-semibold text-gray-800 mb-2">Failed to load game history</h3>
-              <p className="text-gray-600 mb-4">{error}</p>
-              <motion.button
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
+              <RotateCcw size={48} className="mx-auto mb-4 text-gray-700" />
+              <h3 className="text-xl font-semibold text-white mb-2">Failed to load game history</h3>
+              <p className="text-gray-300 mb-4">{error}</p>
+              <button
                 onClick={loadGameHistory}
-                className="bg-gradient-to-r from-blue-500 to-purple-600 text-white px-6 py-3 rounded-lg hover:from-blue-600 hover:to-purple-700 transition-all duration-300 font-semibold"
+                className="inline-flex items-center gap-2 bg-indigo-600 hover:bg-indigo-500 text-white px-6 py-3 rounded-lg transition-colors font-semibold"
               >
+                <RotateCcw size={18} />
                 Try Again
-              </motion.button>
+              </button>
             </div>
           ) : (
             <div className="text-center py-12">
-              <div className="text-6xl mb-4">🎮</div>
-              <h3 className="text-xl font-semibold text-gray-800 mb-2">No games played yet</h3>
-              <p className="text-gray-600">Start playing games to see your history here!</p>
+              <Gamepad2 size={48} className="mx-auto mb-4 text-gray-700" />
+              <h3 className="text-xl font-semibold text-white mb-2">No games played yet</h3>
+              <p className="text-gray-300">Start playing games to see your history here.</p>
             </div>
           )}
-        </motion.div>
+        </div>
       </div>
     </div>
   );
 };
 
-export default Games; 
+export default Games;

@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
+import { Brain, Loader } from 'lucide-react';
 
 const Register = () => {
   const { register } = useAuth();
@@ -28,33 +29,118 @@ const Register = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-900 via-purple-900 to-gray-900 dark:from-gray-950 dark:via-gray-900 dark:to-gray-950">
-      <div className="w-full max-w-md p-6 sm:p-10 rounded-3xl shadow-2xl bg-white/80 dark:bg-gray-900/80 backdrop-blur-lg border border-gray-200 dark:border-gray-800 flex flex-col items-center">
-        <img src="/logo.svg" alt="SoulSpace Logo" className="w-16 h-16 mb-4 drop-shadow-xl" />
-        <h2 className="text-3xl font-extrabold text-gray-900 dark:text-white mb-2 text-center">Create Account</h2>
-        <p className="text-gray-500 dark:text-gray-400 mb-6 text-center">Join SoulSpace and start your journey</p>
-        <form onSubmit={handleSubmit} className="w-full space-y-4">
-          {error && <div className="bg-red-100 dark:bg-red-900 text-red-700 dark:text-red-300 rounded-lg px-4 py-2 text-sm text-center mb-2">{error}</div>}
-          <div className="flex gap-2 mb-2">
-            <button type="button" className={`flex-1 py-2 rounded-xl font-semibold transition-colors border ${form.userType === 'email' ? 'bg-blue-600 text-white border-blue-600' : 'bg-white/80 dark:bg-gray-800/80 text-gray-700 dark:text-gray-200 border-gray-300 dark:border-gray-700'}`} onClick={() => handleUserType('email')}>Email</button>
-            <button type="button" className={`flex-1 py-2 rounded-xl font-semibold transition-colors border ${form.userType === 'anonymous' ? 'bg-blue-600 text-white border-blue-600' : 'bg-white/80 dark:bg-gray-800/80 text-gray-700 dark:text-gray-200 border-gray-300 dark:border-gray-700'}`} onClick={() => handleUserType('anonymous')}>Anonymous</button>
+    <div className="min-h-screen flex items-center justify-center bg-gray-950 px-4">
+      <div className="w-full max-w-md">
+        <div className="text-center mb-12">
+          <div className="flex justify-center mb-4">
+            <div className="w-16 h-16 bg-indigo-600 rounded-lg flex items-center justify-center">
+              <Brain size={32} className="text-white" />
+            </div>
           </div>
-          <input type="text" name="name" placeholder="Name" value={form.name} onChange={handleChange} className="w-full px-4 py-3 rounded-xl border border-gray-300 dark:border-gray-700 bg-white/80 dark:bg-gray-800/80 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 focus:outline-none transition" />
-          {form.userType === 'email' && (
-            <>
-              <input type="email" name="email" placeholder="Email" value={form.email} onChange={handleChange} className="w-full px-4 py-3 rounded-xl border border-gray-300 dark:border-gray-700 bg-white/80 dark:bg-gray-800/80 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 focus:outline-none transition" />
-              <input type="password" name="password" placeholder="Password" value={form.password} onChange={handleChange} className="w-full px-4 py-3 rounded-xl border border-gray-300 dark:border-gray-700 bg-white/80 dark:bg-gray-800/80 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 focus:outline-none transition" />
-            </>
-          )}
-          <button type="submit" className="w-full py-3 rounded-xl bg-gradient-to-r from-blue-600 to-purple-600 dark:from-blue-700 dark:to-purple-800 text-white font-bold shadow-lg hover:scale-[1.02] hover:shadow-xl transition disabled:opacity-60 disabled:cursor-not-allowed" disabled={loading}>{loading ? 'Registering...' : 'Register'}</button>
-          <div className="flex items-center justify-between text-xs text-gray-400 dark:text-gray-500">
-            <span>or</span>
-            <Link to="/login" className="text-blue-600 dark:text-blue-400 hover:underline font-semibold">Sign in</Link>
-          </div>
-        </form>
+          <h1 className="text-3xl font-bold text-white mb-2">SoulSpace</h1>
+          <p className="text-gray-300">Start your mental health journey</p>
+        </div>
+
+        <div className="bg-gray-900 border border-gray-800 rounded-xl p-6 mb-6">
+          <h2 className="text-xl font-semibold text-white mb-1">Create Account</h2>
+          <p className="text-gray-300 text-sm mb-6">Join our community today</p>
+
+          <form onSubmit={handleSubmit} className="space-y-4">
+            {error && <p className="text-xs text-gray-600 text-center mt-6">{error}</p>}
+
+            <div className="flex gap-3 mb-6">
+              <button
+                type="button"
+                onClick={() => handleUserType('email')}
+                className={`flex-1 py-3 rounded-lg font-medium transition-colors border ${
+                  form.userType === 'email'
+                    ? 'bg-indigo-600 border-indigo-500 text-white'
+                    : 'bg-gray-800 border-gray-700 text-gray-300 hover:bg-gray-700'
+                }`}
+              >
+                Email
+              </button>
+              <button
+                type="button"
+                onClick={() => handleUserType('anonymous')}
+                className={`flex-1 py-3 rounded-lg font-medium transition-colors border ${
+                  form.userType === 'anonymous'
+                    ? 'bg-indigo-600 border-indigo-500 text-white'
+                    : 'bg-gray-800 border-gray-700 text-gray-300 hover:bg-gray-700'
+                }`}
+              >
+                Guest
+              </button>
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-300 mb-2">Name</label>
+              <input
+                type="text"
+                name="name"
+                placeholder="Your name"
+                value={form.name}
+                onChange={handleChange}
+                className="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-lg text-white placeholder-gray-500 focus:border-indigo-500 focus:outline-none transition"
+              />
+            </div>
+
+            {form.userType === 'email' && (
+              <>
+                <div>
+                  <label className="block text-sm font-medium text-gray-300 mb-2">Email</label>
+                  <input
+                    type="email"
+                    name="email"
+                    placeholder="you@example.com"
+                    value={form.email}
+                    onChange={handleChange}
+                    className="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-lg text-white placeholder-gray-500 focus:border-indigo-500 focus:outline-none transition"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-300 mb-2">Password</label>
+                  <input
+                    type="password"
+                    name="password"
+                    placeholder="Password"
+                    value={form.password}
+                    onChange={handleChange}
+                    className="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-lg text-white placeholder-gray-500 focus:border-indigo-500 focus:outline-none transition"
+                  />
+                </div>
+              </>
+            )}
+
+            <button
+              type="submit"
+              disabled={loading}
+              className="w-full py-3 bg-indigo-600 hover:bg-indigo-500 disabled:opacity-60 disabled:cursor-not-allowed text-white font-semibold rounded-lg transition-colors flex items-center justify-center gap-2"
+            >
+              {loading ? (
+                <>
+                  <Loader size={18} className="animate-spin" />
+                  Creating Account...
+                </>
+              ) : (
+                'Create Account'
+              )}
+            </button>
+          </form>
+        </div>
+
+        <div className="text-center">
+          <p className="text-gray-300 text-sm">
+            Already have an account?{' '}
+            <Link to="/login" className="text-indigo-400 hover:text-indigo-300 font-semibold transition-colors">
+              Sign in
+            </Link>
+          </p>
+        </div>
       </div>
     </div>
   );
 };
 
-export default Register; 
+export default Register;

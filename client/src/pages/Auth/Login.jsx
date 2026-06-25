@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
+import { Brain, Loader } from 'lucide-react';
 
 const Login = () => {
   const { login } = useAuth();
@@ -26,25 +27,100 @@ const Login = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-900 via-purple-900 to-gray-900 dark:from-gray-950 dark:via-gray-900 dark:to-gray-950">
-      <div className="w-full max-w-md p-6 sm:p-10 rounded-3xl shadow-2xl bg-white/80 dark:bg-gray-900/80 backdrop-blur-lg border border-gray-200 dark:border-gray-800 flex flex-col items-center">
-        <img src="/logo.svg" alt="SoulSpace Logo" className="w-16 h-16 mb-4 drop-shadow-xl" />
-        <h2 className="text-3xl font-extrabold text-gray-900 dark:text-white mb-2 text-center">Welcome Back</h2>
-        <p className="text-gray-500 dark:text-gray-400 mb-6 text-center">Sign in to your SoulSpace account</p>
-        <form onSubmit={handleSubmit} className="w-full space-y-4">
-          {error && <div className="bg-red-100 dark:bg-red-900 text-red-700 dark:text-red-300 rounded-lg px-4 py-2 text-sm text-center mb-2">{error}</div>}
-          <input type="email" name="email" placeholder="Email" value={form.email} onChange={handleChange} autoComplete="email" className="w-full px-4 py-3 rounded-xl border border-gray-300 dark:border-gray-700 bg-white/80 dark:bg-gray-800/80 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 focus:outline-none transition" />
-          <input type="password" name="password" placeholder="Password" value={form.password} onChange={handleChange} autoComplete="current-password" className="w-full px-4 py-3 rounded-xl border border-gray-300 dark:border-gray-700 bg-white/80 dark:bg-gray-800/80 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 focus:outline-none transition" />
-          <div className="flex items-center justify-between text-xs text-gray-400 dark:text-gray-500">
-            <span>or</span>
-            <Link to="/register" className="text-blue-600 dark:text-blue-400 hover:underline font-semibold">Create account</Link>
+    <div className="min-h-screen flex items-center justify-center bg-gray-950 px-4">
+      <div className="w-full max-w-md">
+        <div className="text-center mb-12">
+          <div className="flex justify-center mb-4">
+            <div className="w-16 h-16 bg-indigo-600 rounded-lg flex items-center justify-center">
+              <Brain size={32} className="text-white" />
+            </div>
           </div>
-          <input type="text" name="anonymousId" placeholder="Anonymous ID (for guest login)" value={form.anonymousId} onChange={handleChange} className="w-full px-4 py-3 rounded-xl border border-gray-300 dark:border-gray-700 bg-white/80 dark:bg-gray-800/80 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 focus:outline-none transition" />
-          <button type="submit" className="w-full py-3 rounded-xl bg-gradient-to-r from-blue-600 to-purple-600 dark:from-blue-700 dark:to-purple-800 text-white font-bold shadow-lg hover:scale-[1.02] hover:shadow-xl transition disabled:opacity-60 disabled:cursor-not-allowed" disabled={loading}>{loading ? 'Logging in...' : 'Login'}</button>
-        </form>
+          <h1 className="text-3xl font-bold text-white mb-2">SoulSpace</h1>
+          <p className="text-gray-300">Your personal mental health sanctuary</p>
+        </div>
+
+        <div className="bg-gray-900 border border-gray-800 rounded-xl p-6 mb-6">
+          <h2 className="text-xl font-semibold text-white mb-1">Welcome Back</h2>
+          <p className="text-gray-300 text-sm mb-6">Sign in to your account</p>
+
+          <form onSubmit={handleSubmit} className="space-y-4">
+            {error && <p className="text-xs text-gray-600 text-center mt-6">{error}</p>}
+
+            <div>
+              <label className="block text-sm font-medium text-gray-300 mb-2">Email</label>
+              <input
+                type="email"
+                name="email"
+                placeholder="you@example.com"
+                value={form.email}
+                onChange={handleChange}
+                autoComplete="email"
+                className="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-lg text-white placeholder-gray-500 focus:border-indigo-500 focus:outline-none transition"
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-300 mb-2">Password</label>
+              <input
+                type="password"
+                name="password"
+                placeholder="Password"
+                value={form.password}
+                onChange={handleChange}
+                autoComplete="current-password"
+                className="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-lg text-white placeholder-gray-500 focus:border-indigo-500 focus:outline-none transition"
+              />
+            </div>
+
+            <button
+              type="submit"
+              disabled={loading}
+              className="w-full py-3 bg-indigo-600 hover:bg-indigo-500 disabled:opacity-60 disabled:cursor-not-allowed text-white font-semibold rounded-lg transition-colors flex items-center justify-center gap-2"
+            >
+              {loading ? (
+                <>
+                  <Loader size={18} className="animate-spin" />
+                  Signing in...
+                </>
+              ) : (
+                'Sign In'
+              )}
+            </button>
+          </form>
+
+          <div className="relative my-6">
+            <div className="absolute inset-0 flex items-center">
+              <div className="w-full border-t border-gray-700"></div>
+            </div>
+            <div className="relative flex justify-center text-sm">
+              <span className="px-2 bg-gray-900 text-gray-500">or</span>
+            </div>
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-300 mb-2">Guest Login</label>
+            <input
+              type="text"
+              name="anonymousId"
+              placeholder="Enter any ID to continue"
+              value={form.anonymousId}
+              onChange={handleChange}
+              className="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-lg text-white placeholder-gray-500 focus:border-indigo-500 focus:outline-none transition"
+            />
+          </div>
+        </div>
+
+        <div className="text-center">
+          <p className="text-gray-300 text-sm">
+            Don't have an account?{' '}
+            <Link to="/register" className="text-indigo-400 hover:text-indigo-300 font-semibold transition-colors">
+              Sign up
+            </Link>
+          </p>
+        </div>
       </div>
     </div>
   );
 };
 
-export default Login; 
+export default Login;

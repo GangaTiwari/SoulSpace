@@ -3,6 +3,7 @@ const router = express.Router();
 const {
   register,
   login,
+  logout,
   getMe,
   updateProfile,
   deleteAccount
@@ -15,6 +16,7 @@ router.post('/login', login);
 
 // Protected routes
 router.get('/me', protect, getMe);
+router.post('/logout', protect, logout);
 router.put('/profile', protect, updateProfile);
 router.delete('/account', protect, deleteAccount);
 

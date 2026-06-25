@@ -1,14 +1,21 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
+import { Home } from 'lucide-react';
 
 const NotFound = () => {
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-100 to-purple-100 dark:from-gray-900 dark:to-gray-950 p-6">
-      <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl p-12 max-w-lg w-full border border-gray-100 dark:border-gray-700 text-center">
-        <h1 className="text-6xl font-extrabold text-blue-600 dark:text-blue-400 mb-4">404</h1>
-        <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">Page Not Found</h2>
-        <p className="text-gray-600 dark:text-gray-400 mb-6">Sorry, the page you are looking for does not exist.</p>
-        <Link to="/" className="inline-block bg-blue-600 dark:bg-blue-500 text-white px-6 py-2 rounded-lg hover:bg-blue-700 dark:hover:bg-blue-600 transition-colors font-semibold shadow">Go Home</Link>
+    <div className="min-h-screen flex items-center justify-center bg-gray-950 px-4">
+      <div className="text-center">
+        <div className="text-9xl font-bold text-gray-700 mb-4">404</div>
+        <h1 className="text-3xl font-bold text-white mb-2">Page Not Found</h1>
+        <p className="text-gray-300 mb-8 max-w-md">Sorry, the page you are looking for does not exist or has been moved.</p>
+        <Link
+          to="/"
+          className="inline-flex items-center gap-2 bg-indigo-600 hover:bg-indigo-500 text-white px-8 py-3 rounded-lg transition-colors font-semibold"
+        >
+          <Home size={20} />
+          Go Home
+        </Link>
       </div>
     </div>
   );

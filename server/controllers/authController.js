@@ -9,61 +9,45 @@ const generateToken = (id) => {
   });
 };
 
-// @desc    Register user (email or anonymous)
+// @desc    Register user
 // @route   POST /api/auth/register
 // @access  Public
 const register = async (req, res) => {
   try {
-    const { name, email, password, userType = 'email' } = req.body;
+    const { name, email, password } = req.body;
 
-    // Validate user type
-    if (!['email', 'anonymous'].includes(userType)) {
+    if (!email || !password || !name) {
       return res.status(400).json({
         success: false,
-        message: 'Invalid user type. Must be "email" or "anonymous"'
+        message: 'Please provide name, email, and password'
       });
     }
 
-    let user;
-
-    if (userType === 'email') {
-      // Email registration
-      if (!email || !password || !name) {
-        return res.status(400).json({
-          success: false,
-          message: 'Please provide name, email, and password for email registration'
-        });
-      }
-
-      // Check if user exists
-      const existingUser = await User.findOne({ email });
-      if (existingUser) {
-        return res.status(400).json({
-          success: false,
-          message: 'User already exists with this email'
-        });
-      }
-
-      // Create user
-      user = await User.create({
-        name,
-        email,
-        password,
-        userType: 'email'
-      });
-    } else {
-      // Anonymous registration
-      const anonymousId = `anon_${Math.random().toString(36).substr(2, 9)}_${Date.now()}`;
-      
-      user = await User.create({
-        name: name || 'Anonymous User',
-        anonymousId,
-        userType: 'anonymous'
+    // Check if user exists
+    const existingUser = await User.findOne({ email });
+    if (existingUser) {
+      return res.status(400).json({
+        success: false,
+        message: 'User already exists with this email'
       });
     }
 
-    // Generate token
+    // Create user
+    const user = await User.create({
+      name,
+      email,
+      password,
+      userType: 'email'
+    });
+
+    // Generate token and set httpOnly cookie
     const token = generateToken(user._id);
+    res.cookie('token', token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'strict',
+      maxAge: 7 * 24 * 60 * 60 * 1000
+    });
 
     res.status(201).json({
       success: true,
@@ -71,15 +55,11 @@ const register = async (req, res) => {
         user: {
           _id: user._id,
           name: user.name,
-          email: user.email,
-          userType: user.userType,
-          anonymousId: user.anonymousId
-        },
-        token
+          email: user.email
+        }
       }
     });
   } catch (error) {
-    console.error('Registration error:', error);
     res.status(500).json({
       success: false,
       message: 'Server error during registration'
@@ -92,53 +72,45 @@ const register = async (req, res) => {
 // @access  Public
 const login = async (req, res) => {
   try {
-    const { email, password, anonymousId } = req.body;
+    const { email, password } = req.body;
 
-    let user;
+    if (!email || !password) {
+      return res.status(400).json({
+        success: false,
+        message: 'Please provide email and password'
+      });
+    }
 
-    if (anonymousId) {
-      // Anonymous login
-      user = await User.findOne({ anonymousId });
-      if (!user) {
-        return res.status(401).json({
-          success: false,
-          message: 'Invalid anonymous credentials'
-        });
-      }
-    } else {
-      // Email login
-      if (!email || !password) {
-        return res.status(400).json({
-          success: false,
-          message: 'Please provide email and password'
-        });
-      }
+    // Check for user
+    const user = await User.findOne({ email }).select('+password');
+    if (!user) {
+      return res.status(401).json({
+        success: false,
+        message: 'Invalid credentials'
+      });
+    }
 
-      // Check for user
-      user = await User.findOne({ email }).select('+password');
-      if (!user) {
-        return res.status(401).json({
-          success: false,
-          message: 'Invalid credentials'
-        });
-      }
-
-      // Check password
-      const isMatch = await user.comparePassword(password);
-      if (!isMatch) {
-        return res.status(401).json({
-          success: false,
-          message: 'Invalid credentials'
-        });
-      }
+    // Check password
+    const isMatch = await user.comparePassword(password);
+    if (!isMatch) {
+      return res.status(401).json({
+        success: false,
+        message: 'Invalid credentials'
+      });
     }
 
     // Update last login
     user.lastLogin = new Date();
     await user.save();
 
-    // Generate token
+    // Generate token and set httpOnly cookie
     const token = generateToken(user._id);
+    res.cookie('token', token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'strict',
+      maxAge: 7 * 24 * 60 * 60 * 1000
+    });
 
     res.json({
       success: true,
@@ -146,16 +118,11 @@ const login = async (req, res) => {
         user: {
           _id: user._id,
           name: user.name,
-          email: user.email,
-          userType: user.userType,
-          anonymousId: user.anonymousId,
-          preferences: user.preferences
-        },
-        token
+          email: user.email
+        }
       }
     });
   } catch (error) {
-    console.error('Login error:', error);
     res.status(500).json({
       success: false,
       message: 'Server error during login'
@@ -176,19 +143,37 @@ const getMe = async (req, res) => {
         user: {
           id: user._id,
           name: user.name,
-          email: user.email,
-          userType: user.userType,
-          anonymousId: user.anonymousId,
-          preferences: user.preferences,
-          wearables: user.wearables
+          email: user.email
         }
       }
     });
   } catch (error) {
-    console.error('Get user error:', error);
     res.status(500).json({
       success: false,
       message: 'Server error'
+    });
+  }
+};
+
+// @desc    Logout user
+// @route   POST /api/auth/logout
+// @access  Private
+const logout = async (req, res) => {
+  try {
+    res.clearCookie('token', {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'strict'
+    });
+
+    res.json({
+      success: true,
+      message: 'Logged out successfully'
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: 'Server error during logout'
     });
   }
 };
@@ -203,7 +188,7 @@ const updateProfile = async (req, res) => {
     const user = await User.findById(req.user.id);
 
     if (name) user.name = name;
-    if (email && user.userType === 'email') user.email = email;
+    if (email) user.email = email;
     if (bio) user.bio = bio;
     if (preferences) {
       user.preferences = { ...user.preferences, ...preferences };
@@ -217,15 +202,11 @@ const updateProfile = async (req, res) => {
         user: {
           id: user._id,
           name: user.name,
-          email: user.email,
-          userType: user.userType,
-          anonymousId: user.anonymousId,
-          preferences: user.preferences
+          email: user.email
         }
       }
     });
   } catch (error) {
-    console.error('Update profile error:', error);
     res.status(500).json({
       success: false,
       message: 'Server error updating profile'
@@ -240,12 +221,17 @@ const deleteAccount = async (req, res) => {
   try {
     await User.findByIdAndDelete(req.user.id);
 
+    res.clearCookie('token', {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'strict'
+    });
+
     res.json({
       success: true,
       message: 'Account deleted successfully'
     });
   } catch (error) {
-    console.error('Delete account error:', error);
     res.status(500).json({
       success: false,
       message: 'Server error deleting account'
@@ -256,6 +242,7 @@ const deleteAccount = async (req, res) => {
 module.exports = {
   register,
   login,
+  logout,
   getMe,
   updateProfile,
   deleteAccount

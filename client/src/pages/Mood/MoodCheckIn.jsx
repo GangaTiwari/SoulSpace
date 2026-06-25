@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import API from '../../api/axios';
+import { Angry, ArrowRight, Cloud, Frown, Laugh, Meh, Smile, Zap } from 'lucide-react';
 
 const MoodCheckIn = () => {
   const navigate = useNavigate();
@@ -38,23 +39,19 @@ const MoodCheckIn = () => {
   };
 
   const moods = [
-    { id: 'very_happy', emoji: '😄', label: 'Very Happy', color: 'bg-green-500' },
-    { id: 'happy', emoji: '🙂', label: 'Happy', color: 'bg-green-400' },
-    { id: 'calm', emoji: '😌', label: 'Calm', color: 'bg-blue-400' },
-    { id: 'neutral', emoji: '😐', label: 'Neutral', color: 'bg-gray-400' },
-    { id: 'sad', emoji: '😔', label: 'Sad', color: 'bg-blue-500' },
-    { id: 'anxious', emoji: '😰', label: 'Anxious', color: 'bg-yellow-500' },
-    { id: 'angry', emoji: '😠', label: 'Angry', color: 'bg-red-500' },
-    { id: 'excited', emoji: '🤩', label: 'Excited', color: 'bg-purple-500' }
+    { id: 'very_happy', icon: Laugh, label: 'Very Happy' },
+    { id: 'happy', icon: Smile, label: 'Happy' },
+    { id: 'calm', icon: Cloud, label: 'Calm' },
+    { id: 'neutral', icon: Meh, label: 'Neutral' },
+    { id: 'sad', icon: Frown, label: 'Sad' },
+    { id: 'anxious', icon: Cloud, label: 'Anxious' },
+    { id: 'angry', icon: Angry, label: 'Angry' },
+    { id: 'excited', icon: Zap, label: 'Excited' }
   ];
-
-  const handleMoodSelect = (mood) => {
-    setSelectedMood(mood);
-  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
+
     if (!selectedMood) {
       alert('Please select a mood');
       return;
@@ -62,17 +59,13 @@ const MoodCheckIn = () => {
 
     try {
       setLoading(true);
-      
-      const moodData = {
+
+      await API.post('/mood', {
         mood: selectedMood.id,
-        intensity: intensity,
+        intensity,
         notes: notes.trim() || undefined,
         timestamp: new Date().toISOString()
-      };
-
-      await API.post('/mood', moodData);
-
-      // Show success message and redirect
+      });
       alert('Mood recorded successfully!');
       navigate('/mood/history');
     } catch (error) {
@@ -83,186 +76,90 @@ const MoodCheckIn = () => {
     }
   };
 
-  const getMoodComparison = () => {
-    if (!recentMood || !selectedMood) return null;
-    
-    const intensityDiff = intensity - recentMood.intensity;
-    if (Math.abs(intensityDiff) <= 1) return 'similar';
-    return intensityDiff > 0 ? 'better' : 'worse';
-  };
+  const recentMoodMeta = recentMood ? moods.find(m => m.id === recentMood.mood) : null;
+  const RecentMoodIcon = recentMoodMeta?.icon || Meh;
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-100 to-purple-100 dark:from-gray-900 dark:to-gray-950 p-6">
-      <div className="max-w-2xl mx-auto">
-        <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl p-8 mb-8 border border-gray-100 dark:border-gray-700">
-          <div className="mb-8 text-center">
-            <h1 className="text-4xl font-extrabold text-gray-900 dark:text-white mb-2">How are you feeling? <span className="text-blue-600 dark:text-blue-400">😊</span></h1>
-            <p className="text-lg text-gray-600 dark:text-gray-400">Take a moment to check in with yourself</p>
-          </div>
+    <div className="max-w-2xl mx-auto py-12">
+      <div className="mb-12">
+        <h1 className="text-3xl font-bold text-white mb-2 flex items-center gap-3">
+          <Smile size={30} className="text-indigo-500" />
+          How are you feeling?
+        </h1>
+        <p className="text-gray-300">Take a moment to check in with yourself</p>
+      </div>
 
-          {/* Recent Mood Comparison */}
-          {recentMood && (
-            <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 mb-6">
-              <h2 className="text-lg font-semibold text-gray-800 dark:text-gray-100 mb-3">Your Last Check-in</h2>
-              <div className="flex items-center space-x-4">
-                <div className="text-3xl">
-                  {moods.find(m => m.id === recentMood.mood)?.emoji}
-                </div>
-                <div>
-                  <p className="font-medium text-gray-800 dark:text-gray-100">
-                    {moods.find(m => m.id === recentMood.mood)?.label} ({recentMood.intensity}/10)
-                  </p>
-                  <p className="text-sm text-gray-500 dark:text-gray-400">
-                    {new Date(recentMood.timestamp).toLocaleDateString()}
-                  </p>
-                </div>
-              </div>
-            </div>
-          )}
+      {recentMood && (
+        <div className="bg-gray-900 border border-gray-800 rounded-xl p-6 mb-8">
+          <p className="text-sm font-medium text-gray-500 mb-3">Your Last Check-in</p>
+          <RecentMoodIcon size={28} className="text-indigo-500" />
+          <p className="text-white font-medium mt-2">{recentMoodMeta?.label} ({recentMood.intensity}/10)</p>
+          <p className="text-gray-500 text-xs mt-1">{new Date(recentMood.timestamp).toLocaleDateString()}</p>
+        </div>
+      )}
 
-          <form onSubmit={handleSubmit} className="space-y-6">
-            {/* Mood Selection */}
-            <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
-              <h2 className="text-lg font-semibold text-gray-800 dark:text-gray-100 mb-4">Select Your Mood</h2>
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                {moods.map((mood) => (
-                  <button
-                    key={mood.id}
-                    type="button"
-                    onClick={() => handleMoodSelect(mood)}
-                    className={`p-4 rounded-lg border-2 transition-all ${
-                      selectedMood?.id === mood.id
-                        ? 'border-blue-500 bg-blue-50'
-                        : 'border-gray-200 hover:border-gray-300'
-                    }`}
-                  >
-                    <div className="text-3xl mb-2">{mood.emoji}</div>
-                    <div className="text-sm font-medium text-gray-800 dark:text-gray-100">{mood.label}</div>
-                  </button>
-                ))}
-              </div>
-            </div>
-
-            {/* Intensity Slider */}
-            <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
-              <h2 className="text-lg font-semibold text-gray-800 dark:text-gray-100 mb-4">
-                Intensity: {intensity}/10
-              </h2>
-              <div className="space-y-4">
-                <input
-                  type="range"
-                  min="1"
-                  max="10"
-                  value={intensity}
-                  onChange={(e) => setIntensity(parseInt(e.target.value))}
-                  className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer slider"
-                />
-                <div className="flex justify-between text-sm text-gray-500">
-                  <span>Very Low</span>
-                  <span>Very High</span>
-                </div>
-              </div>
-            </div>
-
-            {/* Notes */}
-            <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
-              <h2 className="text-lg font-semibold text-gray-800 dark:text-gray-100 mb-4">Additional Notes (Optional)</h2>
-              <textarea
-                value={notes}
-                onChange={(e) => setNotes(e.target.value)}
-                placeholder="What's contributing to your mood today? Any specific thoughts or feelings?"
-                className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                rows="4"
-              />
-            </div>
-
-            {/* Journal Prompt */}
-            {journalPrompt && (
-              <div className="bg-gradient-to-br from-blue-50 to-purple-50 rounded-lg p-6">
-                <h3 className="text-lg font-semibold text-gray-800 mb-3">💡 Journal Prompt</h3>
-                <p className="text-gray-700 mb-4">{journalPrompt}</p>
+      <form onSubmit={handleSubmit} className="space-y-8">
+        <div>
+          <h2 className="text-xl font-semibold text-white mb-4">Select Your Mood</h2>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+            {moods.map((mood) => {
+              const MoodIcon = mood.icon;
+              return (
                 <button
+                  key={mood.id}
                   type="button"
-                  onClick={() => navigate('/journal', { state: { prompt: journalPrompt } })}
-                  className="text-blue-600 hover:text-blue-800 font-medium"
+                  onClick={() => setSelectedMood(mood)}
+                  className={`p-6 rounded-lg border-2 transition-colors ${
+                    selectedMood?.id === mood.id
+                      ? 'border-indigo-500 bg-indigo-600/10'
+                      : 'border-gray-800 bg-gray-900 hover:border-gray-700'
+                  }`}
                 >
-                  Write in your journal →
+                  <MoodIcon size={32} className="text-indigo-500 mx-auto mb-2" />
+                  <div className="text-sm font-medium text-gray-300">{mood.label}</div>
                 </button>
-              </div>
-            )}
-
-            {/* Mood Comparison */}
-            {selectedMood && recentMood && (
-              <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
-                <h3 className="text-lg font-semibold text-gray-800 dark:text-gray-100 mb-3">Mood Comparison</h3>
-                <div className="flex items-center space-x-4">
-                  <div className="text-2xl">
-                    {getMoodComparison() === 'better' && '📈'}
-                    {getMoodComparison() === 'worse' && '📉'}
-                    {getMoodComparison() === 'similar' && '➡️'}
-                  </div>
-                  <div>
-                    <p className="font-medium text-gray-800 dark:text-gray-100">
-                      Your mood is {getMoodComparison()} than your last check-in
-                    </p>
-                    <p className="text-sm text-gray-500 dark:text-gray-400">
-                      {Math.abs(intensity - recentMood.intensity)} points difference
-                    </p>
-                  </div>
-                </div>
-              </div>
-            )}
-
-            {/* Submit Button */}
-            <div className="flex space-x-4">
-              <button
-                type="submit"
-                disabled={!selectedMood || loading}
-                className="flex-1 bg-blue-600 text-white py-3 px-6 rounded-lg hover:bg-blue-700 disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors"
-              >
-                {loading ? 'Recording...' : 'Record My Mood'}
-              </button>
-              <button
-                type="button"
-                onClick={() => navigate('/mood/history')}
-                className="px-6 py-3 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
-              >
-                Cancel
-              </button>
-            </div>
-          </form>
-
-          {/* Quick Actions */}
-          <div className="mt-8 bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
-            <h3 className="text-lg font-semibold text-gray-800 dark:text-gray-100 mb-4">Quick Actions</h3>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <button
-                onClick={() => navigate('/chat')}
-                className="p-4 bg-purple-100 rounded-lg hover:bg-purple-200 transition-colors"
-              >
-                <div className="text-2xl mb-2">💬</div>
-                <div className="text-sm font-medium text-gray-800 dark:text-gray-100">Talk to AI</div>
-              </button>
-              <button
-                onClick={() => navigate('/calm-zone')}
-                className="p-4 bg-green-100 rounded-lg hover:bg-green-200 transition-colors"
-              >
-                <div className="text-2xl mb-2">🧘</div>
-                <div className="text-sm font-medium text-gray-800 dark:text-gray-100">Calm Zone</div>
-              </button>
-              <button
-                onClick={() => navigate('/forum')}
-                className="p-4 bg-orange-100 rounded-lg hover:bg-orange-200 transition-colors"
-              >
-                <div className="text-2xl mb-2">👥</div>
-                <div className="text-sm font-medium text-gray-800 dark:text-gray-100">Community</div>
-              </button>
-            </div>
+              );
+            })}
           </div>
         </div>
-      </div>
+
+        <div>
+          <h2 className="text-xl font-semibold text-white mb-4">Intensity: {intensity}/10</h2>
+          <input
+            type="range"
+            min="1"
+            max="10"
+            value={intensity}
+            onChange={(e) => setIntensity(parseInt(e.target.value))}
+            className="w-full h-2 bg-gray-800 rounded-lg appearance-none cursor-pointer accent-indigo-600"
+          />
+          <div className="flex justify-between text-xs text-gray-500 mt-2">
+            <span>Low</span>
+            <span>High</span>
+          </div>
+        </div>
+
+        <div>
+          <h2 className="text-xl font-semibold text-white mb-4">Add Notes (Optional)</h2>
+          <textarea
+            value={notes}
+            onChange={(e) => setNotes(e.target.value)}
+            placeholder={journalPrompt || "What's going on? Any thoughts or feelings you'd like to capture?"}
+            className="w-full px-4 py-3 bg-gray-800 border border-gray-700 focus:border-indigo-500 rounded-lg text-white placeholder-gray-500 focus:outline-none transition resize-none h-24"
+          />
+        </div>
+
+        <button
+          type="submit"
+          disabled={loading}
+          className="w-full py-3 bg-indigo-600 hover:bg-indigo-500 disabled:opacity-60 text-white font-semibold rounded-lg transition-colors flex items-center justify-center gap-2"
+        >
+          {loading ? 'Saving...' : 'Record Mood'}
+          {!loading && <ArrowRight size={18} />}
+        </button>
+      </form>
     </div>
   );
 };
 
-export default MoodCheckIn; 
+export default MoodCheckIn;
