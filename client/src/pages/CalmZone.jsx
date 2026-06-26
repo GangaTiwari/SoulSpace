@@ -20,9 +20,16 @@ const phaseColors = {
   hold: { ring: 'bg-amber-400', text: 'text-amber-600', label: 'Hold' },
   exhale: { ring: 'bg-teal-400', text: 'text-teal-600', label: 'Exhale' },
 };
+const SOUND_URLS = {
+  rain: 'https://assets.mixkit.co/active_storage/sfx/2515/2515-preview.mp3',
+  ocean: 'https://assets.mixkit.co/active_storage/sfx/2516/2516-preview.mp3',
+  forest: 'https://assets.mixkit.co/active_storage/sfx/2517/2517-preview.mp3',
+  fire: 'https://assets.mixkit.co/active_storage/sfx/1792/1792-preview.mp3',
+  birds: 'https://assets.mixkit.co/active_storage/sfx/2525/2525-preview.mp3',
+};
 
 const formatTime = s => `${Math.floor(s / 60)}:${String(s % 60).padStart(2, '0')}`;
-
+const audioRef = useRef(null);
 const CalmZone = () => {
   const [breathPhase, setBreathPhase] = useState('inhale');
   const [breathActive, setBreathActive] = useState(false);
@@ -59,7 +66,25 @@ const CalmZone = () => {
     next();
     return () => clearTimeout(timer);
   }, [breathActive, selectedExercise]);
-
+useEffect(() => {
+  if (audioRef.current) {
+    audioRef.current.pause();
+    audioRef.current = null;
+  }
+  if (selectedSound) {
+    const audio = new Audio(SOUND_URLS[selectedSound.id]);
+    audio.loop = true;
+    audio.volume = 0.5;
+    audio.play().catch(() => {});
+    audioRef.current = audio;
+  }
+  return () => {
+    if (audioRef.current) {
+      audioRef.current.pause();
+      audioRef.current = null;
+    }
+  };
+}, [selectedSound]);
   const phase = phaseColors[breathPhase];
 
   return (
@@ -120,15 +145,18 @@ const CalmZone = () => {
           ))}
         </div>
         {selectedSound && (
-          <div className="mt-4 flex items-center gap-3 px-4 py-3 bg-teal-50 rounded-xl">
-            <div className="flex gap-1">
-              {[1,2,3].map(i => (
-                <div key={i} className="w-1 bg-teal-400 rounded-full animate-pulse" style={{ height: `${8 + i * 4}px`, animationDelay: `${i * 0.15}s` }} />
-              ))}
-            </div>
-            <span className="text-sm font-medium text-teal-700">{selectedSound.name} selected</span>
-          </div>
-        )}
+  <div className="mt-4 flex items-center justify-between px-4 py-3 bg-teal-50 rounded-xl">
+    <div className="flex items-center gap-3">
+      <div className="flex gap-1">
+        {[1,2,3].map(i => (
+          <div key={i} className="w-1 bg-teal-400 rounded-full animate-pulse" style={{ height: `${8 + i * 4}px`, animationDelay: `${i * 0.15}s` }} />
+        ))}
+      </div>
+      <span className="text-sm font-medium text-teal-700">{selectedSound.name} playing</span>
+    </div>
+    <button onClick={() => setSelectedSound(null)} className="text-xs text-teal-500 hover:text-teal-700 font-semibold">Stop</button>
+  </div>
+)}
       </div>
 
       {/* Meditation Timer */}

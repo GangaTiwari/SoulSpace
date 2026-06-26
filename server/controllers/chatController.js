@@ -157,17 +157,9 @@ const getSelfCareSuggestions = async (req, res) => {
     .sort({ timestamp: -1 })
     .select('mood');
 
-    const recentWearableData = await require('../models/WearableData').findOne({
-      user: req.user.id
-    })
-    .sort({ date: -1 })
-    .select('sleep.duration steps.count');
-
-    const userData = {
-      recentMood: recentMood ? recentMood.mood : 'neutral',
-      sleep: recentWearableData ? Math.round(recentWearableData.sleep.duration / 60) : null,
-      steps: recentWearableData ? recentWearableData.steps.count : null
-    };
+   const userData = {
+  recentMood: recentMood ? recentMood.mood : 'neutral',
+};
 
     // Generate personalized suggestions
     const suggestions = await AIService.generateSelfCareSuggestions(
