@@ -2,7 +2,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import API from '../../api/axios';
 import { Send, Loader, Bot } from 'lucide-react';
 
-const quickResponses = ["I'm feeling anxious", "I need someone to talk to", "I'm having a good day", "I'm feeling overwhelmed"];
+const quickResponses = ["Tell me a joke that make me laugh now", "I need someone to talk to", "I'm having a good day", "I'm feeling overwhelmed"];
 
 const ChatBuddy = () => {
   const [messages, setMessages] = useState([{
@@ -30,9 +30,9 @@ const ChatBuddy = () => {
     try {
       const history = messages.map(m => ({ role: m.type === 'user' ? 'user' : 'assistant', content: m.content }));
       const res = await API.post('/chat', { message: text, conversationHistory: history });
-      if (res.data.success) {
-        setMessages(prev => [...prev, { id: Date.now()+1, type: 'ai', content: res.data.data.reply || "I'm here. Tell me more.", timestamp: new Date().toISOString() }]);
-      }
+     if (res.data.success) {
+  setMessages(prev => [...prev, { id: Date.now()+1, type: 'ai', content: res.data.data.message || res.data.data.reply || "I'm here. Tell me more.", timestamp: new Date().toISOString() }]);
+}
     } catch {
       setMessages(prev => [...prev, { id: Date.now()+1, type: 'ai', content: "I'm having trouble connecting. Please try again.", timestamp: new Date().toISOString() }]);
     } finally {
