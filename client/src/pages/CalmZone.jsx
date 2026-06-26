@@ -15,11 +15,6 @@ const ambientSounds = [
   { id: 'birds', name: 'Birds', icon: '🐦' },
 ];
 
-const phaseColors = {
-  inhale: { ring: 'bg-indigo-400', text: 'text-indigo-600', label: 'Inhale' },
-  hold: { ring: 'bg-amber-400', text: 'text-amber-600', label: 'Hold' },
-  exhale: { ring: 'bg-teal-400', text: 'text-teal-600', label: 'Exhale' },
-};
 const SOUND_URLS = {
   rain: 'https://assets.mixkit.co/active_storage/sfx/2515/2515-preview.mp3',
   ocean: 'https://assets.mixkit.co/active_storage/sfx/2516/2516-preview.mp3',
@@ -28,8 +23,14 @@ const SOUND_URLS = {
   birds: 'https://assets.mixkit.co/active_storage/sfx/2525/2525-preview.mp3',
 };
 
+const phaseColors = {
+  inhale: { ring: 'bg-indigo-400', text: 'text-indigo-600', label: 'Inhale' },
+  hold: { ring: 'bg-amber-400', text: 'text-amber-600', label: 'Hold' },
+  exhale: { ring: 'bg-teal-400', text: 'text-teal-600', label: 'Exhale' },
+};
+
 const formatTime = s => `${Math.floor(s / 60)}:${String(s % 60).padStart(2, '0')}`;
-const audioRef = useRef(null);
+
 const CalmZone = () => {
   const [breathPhase, setBreathPhase] = useState('inhale');
   const [breathActive, setBreathActive] = useState(false);
@@ -39,7 +40,9 @@ const CalmZone = () => {
   const [meditationTime, setMeditationTime] = useState(300);
   const [currentTime, setCurrentTime] = useState(300);
   const timerRef = useRef(null);
+  const audioRef = useRef(null);
 
+  // Meditation timer
   useEffect(() => {
     if (meditationActive && currentTime > 0) {
       timerRef.current = setTimeout(() => setCurrentTime(t => t - 1), 1000);
@@ -49,6 +52,7 @@ const CalmZone = () => {
     return () => clearTimeout(timerRef.current);
   }, [meditationActive, currentTime]);
 
+  // Breathing animation
   useEffect(() => {
     if (!breathActive || !selectedExercise) return;
     const { inhale, hold, exhale } = selectedExercise;
@@ -66,25 +70,28 @@ const CalmZone = () => {
     next();
     return () => clearTimeout(timer);
   }, [breathActive, selectedExercise]);
-useEffect(() => {
-  if (audioRef.current) {
-    audioRef.current.pause();
-    audioRef.current = null;
-  }
-  if (selectedSound) {
-    const audio = new Audio(SOUND_URLS[selectedSound.id]);
-    audio.loop = true;
-    audio.volume = 0.5;
-    audio.play().catch(() => {});
-    audioRef.current = audio;
-  }
-  return () => {
+
+  // Ambient audio
+  useEffect(() => {
     if (audioRef.current) {
       audioRef.current.pause();
       audioRef.current = null;
     }
-  };
-}, [selectedSound]);
+    if (selectedSound) {
+      const audio = new Audio(SOUND_URLS[selectedSound.id]);
+      audio.loop = true;
+      audio.volume = 0.5;
+      audio.play().catch(() => {});
+      audioRef.current = audio;
+    }
+    return () => {
+      if (audioRef.current) {
+        audioRef.current.pause();
+        audioRef.current = null;
+      }
+    };
+  }, [selectedSound]);
+
   const phase = phaseColors[breathPhase];
 
   return (
@@ -103,7 +110,8 @@ useEffect(() => {
 
         <div className="grid grid-cols-3 gap-3 mb-6">
           {breathingExercises.map(ex => (
-            <button key={ex.name} onClick={() => { setSelectedExercise(ex); setBreathActive(false); setBreathPhase('inhale'); }}
+            <button key={ex.name}
+              onClick={() => { setSelectedExercise(ex); setBreathActive(false); setBreathPhase('inhale'); }}
               className={`p-4 rounded-2xl border-2 text-left transition-all ${selectedExercise?.name === ex.name ? ex.color : 'border-gray-100 hover:border-gray-200 bg-gray-50'}`}>
               <p className="text-sm font-semibold text-gray-800 mb-1">{ex.name}</p>
               <p className="text-xs text-gray-500">{ex.desc}</p>
@@ -133,30 +141,35 @@ useEffect(() => {
         <div className="flex items-center gap-2 mb-5">
           <Music size={18} className="text-teal-500" />
           <h2 className="text-base font-semibold text-gray-800">Ambient Sounds</h2>
-          <span className="text-xs text-gray-400 ml-1">(visual only)</span>
         </div>
         <div className="grid grid-cols-5 gap-3">
           {ambientSounds.map(s => (
-            <button key={s.id} onClick={() => setSelectedSound(selectedSound?.id === s.id ? null : s)}
+            <button key={s.id}
+              onClick={() => setSelectedSound(selectedSound?.id === s.id ? null : s)}
               className={`flex flex-col items-center gap-2 p-4 rounded-2xl border-2 transition-all ${selectedSound?.id === s.id ? 'border-teal-300 bg-teal-50' : 'border-gray-100 hover:border-gray-200 bg-gray-50'}`}>
               <span className="text-2xl">{s.icon}</span>
               <span className="text-xs font-medium text-gray-500">{s.name}</span>
             </button>
           ))}
         </div>
+
         {selectedSound && (
-  <div className="mt-4 flex items-center justify-between px-4 py-3 bg-teal-50 rounded-xl">
-    <div className="flex items-center gap-3">
-      <div className="flex gap-1">
-        {[1,2,3].map(i => (
-          <div key={i} className="w-1 bg-teal-400 rounded-full animate-pulse" style={{ height: `${8 + i * 4}px`, animationDelay: `${i * 0.15}s` }} />
-        ))}
-      </div>
-      <span className="text-sm font-medium text-teal-700">{selectedSound.name} playing</span>
-    </div>
-    <button onClick={() => setSelectedSound(null)} className="text-xs text-teal-500 hover:text-teal-700 font-semibold">Stop</button>
-  </div>
-)}
+          <div className="mt-4 flex items-center justify-between px-4 py-3 bg-teal-50 rounded-xl">
+            <div className="flex items-center gap-3">
+              <div className="flex gap-1 items-end">
+                {[1, 2, 3].map(i => (
+                  <div key={i} className="w-1 bg-teal-400 rounded-full animate-pulse"
+                    style={{ height: `${8 + i * 4}px`, animationDelay: `${i * 0.15}s` }} />
+                ))}
+              </div>
+              <span className="text-sm font-medium text-teal-700">{selectedSound.name} playing</span>
+            </div>
+            <button onClick={() => setSelectedSound(null)}
+              className="text-xs text-teal-500 hover:text-teal-700 font-semibold transition-colors">
+              Stop
+            </button>
+          </div>
+        )}
       </div>
 
       {/* Meditation Timer */}
@@ -168,7 +181,8 @@ useEffect(() => {
 
         <div className="flex gap-2 mb-6">
           {[{ label: '5 min', value: 300 }, { label: '10 min', value: 600 }, { label: '20 min', value: 1200 }].map(p => (
-            <button key={p.value} onClick={() => { setMeditationTime(p.value); setCurrentTime(p.value); setMeditationActive(false); }}
+            <button key={p.value}
+              onClick={() => { setMeditationTime(p.value); setCurrentTime(p.value); setMeditationActive(false); }}
               className={`px-4 py-2 rounded-xl text-sm font-semibold transition-all ${meditationTime === p.value ? 'bg-violet-600 text-white' : 'bg-gray-100 text-gray-500 hover:bg-gray-200'}`}>
               {p.label}
             </button>
@@ -179,7 +193,8 @@ useEffect(() => {
           <div className="relative w-36 h-36 mb-6">
             <svg className="w-full h-full -rotate-90" viewBox="0 0 100 100">
               <circle cx="50" cy="50" r="42" fill="none" stroke="#f3f4f6" strokeWidth="8" />
-              <circle cx="50" cy="50" r="42" fill="none" stroke="#7c3aed" strokeWidth="8" strokeLinecap="round"
+              <circle cx="50" cy="50" r="42" fill="none" stroke="#7c3aed" strokeWidth="8"
+                strokeLinecap="round"
                 strokeDasharray={`${2 * Math.PI * 42}`}
                 strokeDashoffset={`${2 * Math.PI * 42 * (1 - currentTime / meditationTime)}`}
                 className="transition-all duration-1000" />
