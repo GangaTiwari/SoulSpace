@@ -19,7 +19,7 @@ class AIService {
       
       Return only the prompt text, nothing else.`;
 
-      const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+      const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash-latest" });
       const result = await model.generateContent(prompt);
       const response = await result.response;
       
@@ -42,7 +42,7 @@ class AIService {
       
       Format: [{"emotion": "emotion_name", "confidence": 0.95}]`;
 
-      const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+      const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash-latest" });
       const result = await model.generateContent(prompt);
       const response = await result.response;
       
@@ -68,7 +68,7 @@ class AIService {
       
       Text: "${text}"`;
 
-      const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+      const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash-latest" });
       const result = await model.generateContent(prompt);
       const response = await result.response;
       
@@ -99,7 +99,7 @@ class AIService {
       
       Consider: hate speech, threats, self-harm, harassment, explicit content`;
 
-      const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+      const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash-latest" });
       const result = await model.generateContent(prompt);
       const response = await result.response;
       
@@ -176,7 +176,7 @@ User's current message: ${userMessage}
 
 Please respond as SoulSpace:`;
 
-      const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+      const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash-latest" });
       const result = await model.generateContent(prompt);
       const response = await result.response;
       
@@ -258,7 +258,7 @@ Please respond as SoulSpace:`;
       
       Return as a JSON array: [{"title": "Suggestion Title", "description": "Detailed suggestion", "category": "mindfulness|physical|social|creative"}]`;
 
-      const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+      const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash-latest" });
       const result = await model.generateContent(prompt);
       const response = await result.response;
       
@@ -324,7 +324,7 @@ Please respond as SoulSpace:`;
       
       Return as a JSON object with: {"patterns": "mood pattern insights", "achievements": "weekly achievements", "suggestions": "improvement suggestions"}`;
 
-      const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+      const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash-latest" });
       const result = await model.generateContent(prompt);
       const response = await result.response;
       
@@ -371,7 +371,7 @@ Please respond as SoulSpace:`;
       
       Return as a JSON array: [{"title": "Post Title", "description": "Brief description", "category": "support|discussion|advice|celebration"}]`;
 
-      const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+      const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash-latest" });
       const result = await model.generateContent(prompt);
       const response = await result.response;
       
