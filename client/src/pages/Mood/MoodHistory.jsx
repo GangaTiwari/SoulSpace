@@ -38,17 +38,17 @@ const MoodHistory = () => {
   useEffect(() => { fetchMoodHistory(); }, [fetchMoodHistory]);
 
   return (
-    <div className="max-w-3xl mx-auto py-8 space-y-6">
+    <div className="max-w-4xl mx-auto py-8 space-y-6">
       <div>
-        <h1 className="text-2xl font-bold text-gray-900 mb-1">Mood History</h1>
-        <p className="text-gray-400 text-sm">Track your emotional patterns over time</p>
+        <h1 className="ss-section-title mb-1">Mood History</h1>
+        <p className="ss-subtitle">Track your emotional patterns over time</p>
       </div>
 
       {/* Time range filter */}
       <div className="flex gap-2">
         {[{ value: 'week', label: 'This Week' }, { value: 'month', label: 'Month' }, { value: '3months', label: '3 Months' }, { value: 'year', label: 'Year' }].map(o => (
           <button key={o.value} onClick={() => setTimeRange(o.value)}
-            className={`px-4 py-2 rounded-xl text-sm font-medium transition-all ${timeRange === o.value ? 'bg-indigo-600 text-white shadow-sm' : 'bg-white text-gray-500 border border-gray-200 hover:border-gray-300'}`}>
+            className={`px-4 py-2 rounded-xl text-sm font-medium transition-all ${timeRange === o.value ? 'bg-indigo-600 text-white shadow-sm' : 'bg-white text-gray-600 border border-gray-200 hover:border-indigo-200'}`}>
             {o.label}
           </button>
         ))}
@@ -59,10 +59,10 @@ const MoodHistory = () => {
           <Loader size={32} className="animate-spin text-indigo-400" />
         </div>
       ) : moodHistory.length === 0 ? (
-        <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-12 text-center">
+        <div className="ss-card p-12 text-center">
           <BarChart2 size={40} className="mx-auto mb-3 text-gray-200" />
           <p className="text-gray-500 mb-4">No mood entries yet</p>
-          <Link to="/mood/check-in" className="inline-block bg-indigo-600 hover:bg-indigo-500 text-white px-6 py-2.5 rounded-xl text-sm font-semibold transition-colors">
+          <Link to="/mood/check-in" className="ss-btn-primary text-sm">
             Record Your First Mood
           </Link>
         </div>
@@ -72,7 +72,7 @@ const MoodHistory = () => {
             const meta = getMoodMeta(entry.mood);
             const Icon = meta.icon;
             return (
-              <div key={idx} className="bg-white rounded-2xl border border-gray-100 shadow-sm p-4 flex items-center gap-4 hover:shadow-md transition-shadow">
+              <div key={idx} className="ss-card p-4 flex items-center gap-4 hover:shadow-card transition-shadow">
                 <div className={`w-11 h-11 ${meta.bg} rounded-xl flex items-center justify-center flex-shrink-0`}>
                   <Icon size={22} className={meta.color} />
                 </div>

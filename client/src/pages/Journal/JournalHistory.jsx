@@ -19,33 +19,33 @@ const JournalHistory = () => {
   );
 
   return (
-    <div className="max-w-3xl mx-auto py-8 space-y-6">
+    <div className="max-w-4xl mx-auto py-8 space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900 mb-1">Journal History</h1>
-          <p className="text-gray-400 text-sm">Your past entries</p>
+          <h1 className="ss-section-title mb-1">Journal History</h1>
+          <p className="ss-subtitle">Reflect on your past entries</p>
         </div>
         <Link to="/journal"
-          className="inline-flex items-center gap-2 bg-indigo-600 hover:bg-indigo-500 text-white px-4 py-2.5 rounded-xl text-sm font-semibold transition-colors">
+          className="ss-btn-primary text-sm">
           <Plus size={16} /> New Entry
         </Link>
       </div>
 
       {entries.length === 0 ? (
-        <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-12 text-center">
+        <div className="ss-card p-12 text-center">
           <BookOpen size={40} className="mx-auto mb-3 text-gray-200" />
           <p className="text-gray-500 mb-4">No journal entries yet</p>
-          <Link to="/journal" className="inline-block bg-indigo-600 hover:bg-indigo-500 text-white px-6 py-2.5 rounded-xl text-sm font-semibold transition-colors">
+          <Link to="/journal" className="ss-btn-primary text-sm">
             Write Your First Entry
           </Link>
         </div>
       ) : (
         <div className="space-y-3">
           {entries.map((entry, idx) => (
-            <div key={idx} className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
+            <div key={idx} className="ss-card overflow-hidden">
               <button
                 onClick={() => setExpanded(expanded === idx ? null : idx)}
-                className="w-full flex items-center justify-between p-5 text-left hover:bg-gray-50 transition-colors">
+                className="w-full flex items-center justify-between p-5 text-left hover:bg-indigo-50/30 transition-colors">
                 <div>
                   <p className="font-semibold text-gray-800 text-sm">{entry.prompt || 'Journal Entry'}</p>
                   <p className="text-xs text-gray-400 mt-0.5">

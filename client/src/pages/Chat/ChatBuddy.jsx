@@ -41,9 +41,9 @@ const ChatBuddy = () => {
   };
 
   return (
-    <div className="max-w-2xl mx-auto py-8 flex flex-col" style={{ height: 'calc(100vh - 8rem)' }}>
+    <div className="max-w-3xl mx-auto py-8 flex flex-col" style={{ height: 'calc(100vh - 8rem)' }}>
       {/* Header */}
-      <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-4 mb-4 flex items-center gap-3">
+      <div className="ss-card p-4 mb-4 flex items-center gap-3">
         <div className="w-10 h-10 bg-teal-50 rounded-xl flex items-center justify-center">
           <Bot size={20} className="text-teal-600" />
         </div>
@@ -56,7 +56,7 @@ const ChatBuddy = () => {
       </div>
 
       {/* Messages */}
-      <div className="flex-1 bg-white rounded-2xl border border-gray-100 shadow-sm p-4 overflow-y-auto space-y-4 mb-4">
+      <div className="flex-1 ss-card p-4 overflow-y-auto space-y-4 mb-4">
         {messages.map(msg => (
           <div key={msg.id} className={`flex ${msg.type === 'user' ? 'justify-end' : 'justify-start'} gap-2`}>
             {msg.type === 'ai' && (
@@ -68,7 +68,7 @@ const ChatBuddy = () => {
               <div className={`px-4 py-2.5 rounded-2xl text-sm ${
                 msg.type === 'user'
                   ? 'bg-indigo-600 text-white rounded-br-sm'
-                  : 'bg-gray-50 text-gray-800 border border-gray-100 rounded-bl-sm'
+                  : 'bg-indigo-50/50 text-gray-800 border border-indigo-100 rounded-bl-sm'
               }`}>
                 {msg.content}
               </div>
@@ -93,7 +93,7 @@ const ChatBuddy = () => {
       <div className="flex flex-wrap gap-2 mb-3">
         {quickResponses.map((q, i) => (
           <button key={i} onClick={() => sendMessage(q)} disabled={isTyping}
-            className="text-xs px-3 py-1.5 bg-white border border-gray-200 text-gray-500 rounded-full hover:border-indigo-300 hover:text-indigo-600 transition-colors disabled:opacity-40">
+            className="ss-chip disabled:opacity-40">
             {q}
           </button>
         ))}
@@ -107,10 +107,10 @@ const ChatBuddy = () => {
           onKeyDown={e => e.key === 'Enter' && !e.shiftKey && sendMessage(input)}
           placeholder="Type a message..."
           disabled={isTyping}
-          className="flex-1 px-4 py-3 bg-white border border-gray-200 rounded-xl text-gray-800 placeholder-gray-400 focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 focus:outline-none text-sm transition disabled:opacity-50"
+          className="ss-input disabled:opacity-50"
         />
         <button onClick={() => sendMessage(input)} disabled={isTyping || !input.trim()}
-          className="w-12 h-12 bg-indigo-600 hover:bg-indigo-500 disabled:opacity-40 text-white rounded-xl flex items-center justify-center transition-colors flex-shrink-0">
+          className="ss-btn-primary w-12 h-12 p-0 disabled:opacity-40 flex-shrink-0">
           <Send size={18} />
         </button>
       </div>

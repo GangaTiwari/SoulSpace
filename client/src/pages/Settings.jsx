@@ -31,14 +31,14 @@ const Settings = () => {
   const avatarColor = avatarColors[(user?.name?.charCodeAt(0) || 0) % avatarColors.length];
 
   return (
-    <div className="max-w-xl mx-auto py-8 space-y-5">
+    <div className="max-w-2xl mx-auto py-8 space-y-5">
       <div>
-        <h1 className="text-2xl font-bold text-gray-900 mb-1">Settings</h1>
-        <p className="text-gray-400 text-sm">Manage your account and preferences</p>
+        <h1 className="ss-section-title mb-1">Settings</h1>
+        <p className="ss-subtitle">Manage your account and preferences</p>
       </div>
 
       {/* Profile */}
-      <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
+      <div className="ss-card p-6">
         <div className="flex items-center gap-2 mb-5">
           <User size={16} className="text-indigo-500" />
           <h2 className="text-sm font-semibold text-gray-700">Account</h2>
@@ -55,7 +55,7 @@ const Settings = () => {
       </div>
 
       {/* Notifications */}
-      <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
+      <div className="ss-card p-6">
         <div className="flex items-center gap-2 mb-5">
           <Bell size={16} className="text-indigo-500" />
           <h2 className="text-sm font-semibold text-gray-700">Notifications</h2>
@@ -77,7 +77,7 @@ const Settings = () => {
       </div>
 
       {/* Privacy */}
-      <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
+      <div className="ss-card p-6">
         <div className="flex items-center gap-2 mb-5">
           <Shield size={16} className="text-indigo-500" />
           <h2 className="text-sm font-semibold text-gray-700">Privacy</h2>
@@ -98,7 +98,7 @@ const Settings = () => {
       </button>
 
       {/* Logout */}
-      <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-4">
+      <div className="ss-card p-4">
         <button onClick={() => { logout(); navigate('/login'); }}
           className="w-full flex items-center justify-center gap-2 py-2.5 text-rose-500 hover:bg-rose-50 rounded-xl transition-colors text-sm font-semibold">
           <LogOut size={16} /> Sign Out

@@ -2,20 +2,77 @@
 @tailwind components;
 @tailwind utilities;
 
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Manrope:wght@600;700;800&display=swap');
 
 * {
   box-sizing: border-box;
 }
 
 html {
-  font-family: 'Inter', sans-serif;
+  font-family: 'Inter', 'Manrope', sans-serif;
 }
 
 body {
   margin: 0;
-  background-color: #F7F5F2;
-  color: #1a1a2e;
+  min-height: 100vh;
+  background: radial-gradient(circle at top, #eef2ff 0%, #f8fbff 35%, #f5f7fb 100%);
+  color: #0f172a;
+  line-height: 1.6;
+}
+
+#root {
+  min-height: 100vh;
+}
+
+a, button, input, textarea, select {
+  transition: all 180ms ease;
+}
+
+:focus-visible {
+  outline: 2px solid #6366f1;
+  outline-offset: 2px;
+}
+
+@layer components {
+  .ss-page {
+    @apply max-w-6xl mx-auto py-8 md:py-10 space-y-6 md:space-y-8;
+  }
+
+  .ss-card {
+    @apply bg-serenity-surface rounded-3xl border border-serenity-muted shadow-soft;
+  }
+
+  .ss-card-soft {
+    @apply bg-white/70 backdrop-blur border border-indigo-100/60 rounded-3xl shadow-card;
+  }
+
+  .ss-section-title {
+    @apply text-2xl md:text-3xl font-display font-bold text-serenity-text tracking-tight;
+  }
+
+  .ss-subtitle {
+    @apply text-sm md:text-base text-serenity-subtle;
+  }
+
+  .ss-btn-primary {
+    @apply inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl font-semibold text-white bg-gradient-to-r from-serenity-indigo via-serenity-violet to-serenity-teal shadow-card hover:-translate-y-0.5 disabled:opacity-50 disabled:cursor-not-allowed;
+  }
+
+  .ss-btn-secondary {
+    @apply inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl font-semibold text-serenity-text bg-white border border-serenity-muted hover:border-indigo-200 hover:bg-indigo-50/40;
+  }
+
+  .ss-input {
+    @apply w-full px-4 py-3 bg-white border border-serenity-muted rounded-xl text-sm text-serenity-text placeholder:text-gray-400 focus:border-serenity-indigo focus:ring-2 focus:ring-indigo-100 focus:outline-none;
+  }
+
+  .ss-textarea {
+    @apply w-full px-4 py-3 bg-white border border-serenity-muted rounded-xl text-sm text-serenity-text placeholder:text-gray-400 focus:border-serenity-indigo focus:ring-2 focus:ring-indigo-100 focus:outline-none resize-none;
+  }
+
+  .ss-chip {
+    @apply text-xs px-3 py-1.5 rounded-full bg-white border border-serenity-muted text-serenity-subtle hover:text-serenity-indigo hover:border-indigo-200;
+  }
 }
 
 ::-webkit-scrollbar {

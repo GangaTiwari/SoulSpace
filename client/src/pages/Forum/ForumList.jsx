@@ -61,21 +61,21 @@ useEffect(() => { fetchPosts(); }, [filter, sortBy, searchTerm]);
   };
 
   return (
-    <div className="max-w-3xl mx-auto py-8 space-y-6">
+    <div className="max-w-4xl mx-auto py-8 space-y-6">
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900 mb-1">Community</h1>
-          <p className="text-gray-400 text-sm">Share, support, and connect</p>
+          <h1 className="ss-section-title mb-1">Community</h1>
+          <p className="ss-subtitle">Share, support, and connect in a safe space</p>
         </div>
         <Link to="/forum/create"
-          className="inline-flex items-center gap-2 bg-indigo-600 hover:bg-indigo-500 text-white px-4 py-2.5 rounded-xl text-sm font-semibold transition-colors">
+          className="ss-btn-primary text-sm">
           <Plus size={16} /> New Post
         </Link>
       </div>
 
       {/* Search + sort */}
-      <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-4 space-y-3">
+      <div className="ss-card p-4 space-y-3">
         <div className="flex gap-3">
           <div className="flex-1 relative">
             <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
@@ -84,11 +84,11 @@ useEffect(() => { fetchPosts(); }, [filter, sortBy, searchTerm]);
               placeholder="Search posts..."
               value={searchTerm}
               onChange={e => setSearchTerm(e.target.value)}
-              className="w-full pl-9 pr-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm text-gray-800 placeholder-gray-400 focus:border-indigo-400 focus:outline-none transition"
+              className="w-full pl-9 pr-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm text-gray-800 placeholder-gray-400 focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 focus:outline-none transition"
             />
           </div>
           <select value={sortBy} onChange={e => setSortBy(e.target.value)}
-            className="px-3 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm text-gray-600 focus:border-indigo-400 focus:outline-none">
+            className="px-3 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm text-gray-600 focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 focus:outline-none">
             <option value="recent">Recent</option>
             <option value="popular">Popular</option>
             <option value="trending">Trending</option>
@@ -106,10 +106,10 @@ useEffect(() => { fetchPosts(); }, [filter, sortBy, searchTerm]);
 
       {/* Posts */}
       {posts.length === 0 ? (
-        <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-12 text-center">
+        <div className="ss-card p-12 text-center">
           <FileText size={40} className="mx-auto mb-3 text-gray-200" />
           <p className="text-gray-500 mb-4">No posts yet. Be the first!</p>
-          <Link to="/forum/create" className="inline-flex items-center gap-2 bg-indigo-600 hover:bg-indigo-500 text-white px-5 py-2.5 rounded-xl text-sm font-semibold transition-colors">
+          <Link to="/forum/create" className="ss-btn-primary text-sm">
             <Plus size={16} /> Create Post
           </Link>
         </div>
@@ -118,7 +118,7 @@ useEffect(() => { fetchPosts(); }, [filter, sortBy, searchTerm]);
           {posts.map(post => {
             const isAuthor = user && post.user && (String(user._id) === (typeof post.user === 'object' ? String(post.user._id) : String(post.user)));
             return (
-              <div key={post._id} className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5 hover:shadow-md transition-shadow">
+              <div key={post._id} className="ss-card p-5 hover:shadow-card transition-shadow">
                 <div className="flex items-start gap-4">
                   {/* Heart */}
                   <div className="flex flex-col items-center gap-1 flex-shrink-0 pt-1">

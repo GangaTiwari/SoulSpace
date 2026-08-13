@@ -43,17 +43,17 @@ const MoodCheckIn = () => {
   };
 
   return (
-    <div className="max-w-2xl mx-auto py-8 space-y-8">
+    <div className="max-w-3xl mx-auto py-8 space-y-8">
       <div>
-        <h1 className="text-2xl font-bold text-gray-900 mb-1">How are you feeling?</h1>
-        <p className="text-gray-400 text-sm">Take a moment to check in with yourself</p>
+        <h1 className="ss-section-title mb-1">How are you feeling?</h1>
+        <p className="ss-subtitle">Take a mindful pause and check in with yourself</p>
       </div>
 
       <form onSubmit={handleSubmit} className="space-y-6">
         {/* Mood grid */}
-        <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
+        <div className="ss-card p-6">
           <p className="text-sm font-semibold text-gray-700 mb-4">Select your mood</p>
-          <div className="grid grid-cols-4 gap-3">
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
             {moods.map(mood => {
               const Icon = mood.icon;
               const selected = selectedMood?.id === mood.id;
@@ -63,7 +63,7 @@ const MoodCheckIn = () => {
                   type="button"
                   onClick={() => setSelectedMood(mood)}
                   className={`flex flex-col items-center gap-2 p-4 rounded-2xl border-2 transition-all ${
-                    selected ? `${mood.bg} ${mood.border}` : 'border-gray-100 hover:border-gray-200 bg-white'
+                    selected ? `${mood.bg} ${mood.border} shadow-sm` : 'border-gray-100 hover:border-gray-200 bg-white'
                   }`}
                 >
                   <Icon size={28} className={selected ? mood.color : 'text-gray-400'} />
@@ -75,7 +75,7 @@ const MoodCheckIn = () => {
         </div>
 
         {/* Intensity */}
-        <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
+        <div className="ss-card p-6">
           <div className="flex items-center justify-between mb-4">
             <p className="text-sm font-semibold text-gray-700">Intensity</p>
             <span className="text-sm font-semibold text-indigo-600">{intensity}/10 — {intensityLabels[intensity]}</span>
@@ -91,20 +91,20 @@ const MoodCheckIn = () => {
         </div>
 
         {/* Notes */}
-        <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
+        <div className="ss-card p-6">
           <p className="text-sm font-semibold text-gray-700 mb-3">Add a note <span className="text-gray-400 font-normal">(optional)</span></p>
           <textarea
             value={notes}
             onChange={e => setNotes(e.target.value)}
             placeholder={journalPrompt || "What's on your mind?"}
-            className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-gray-800 placeholder-gray-400 focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 focus:outline-none transition resize-none h-24 text-sm"
+            className="ss-textarea bg-gray-50 h-24"
           />
         </div>
 
         <button
           type="submit"
           disabled={loading || !selectedMood}
-          className="w-full py-3.5 bg-indigo-600 hover:bg-indigo-500 disabled:opacity-40 disabled:cursor-not-allowed text-white font-semibold rounded-xl transition-colors flex items-center justify-center gap-2"
+          className="ss-btn-primary w-full py-3.5"
         >
           {loading ? 'Saving...' : <><span>Record Mood</span><ArrowRight size={18} /></>}
         </button>

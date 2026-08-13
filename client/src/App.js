@@ -25,11 +25,11 @@ const AppLayout = () => {
   const isAuth = authPaths.includes(location.pathname);
 
   return (
-    <div className="flex h-screen bg-[#F7F5F2]">
+    <div className="flex min-h-screen bg-serenity-bg text-serenity-text">
       {!isAuth && <Navigation />}
-      <div className={!isAuth ? 'flex-1 lg:pl-64 overflow-y-auto' : 'flex-1'}>
+      <div className={!isAuth ? 'flex-1 lg:pl-72 overflow-y-auto' : 'flex-1'}>
         {!isAuth && <div className="lg:hidden h-16" />}
-        <main className={!isAuth ? 'p-6 md:p-8 min-h-screen' : 'min-h-screen'}>
+        <main className={!isAuth ? 'px-4 py-6 md:px-8 md:py-8 min-h-screen' : 'min-h-screen'}>
           <Routes>
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />

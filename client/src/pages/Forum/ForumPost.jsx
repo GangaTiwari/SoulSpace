@@ -81,14 +81,14 @@ const ForumPost = () => {
   );
 
   return (
-    <div className="max-w-3xl mx-auto py-8 space-y-5">
+    <div className="max-w-4xl mx-auto py-8 space-y-5">
       {/* Back */}
       <Link to="/forum" className="inline-flex items-center gap-2 text-sm text-gray-400 hover:text-gray-700 transition-colors">
         <ArrowLeft size={16} /> Back to Community
       </Link>
 
       {/* Post */}
-      <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
+      <div className="ss-card p-6">
         <div className="flex items-center gap-2 mb-4 flex-wrap">
           <span className={`text-xs font-semibold px-2.5 py-1 rounded-full ${categoryColors[post.type] || 'bg-gray-100 text-gray-600'}`}>
             {post.type}
@@ -109,7 +109,7 @@ const ForumPost = () => {
       </div>
 
       {/* Replies */}
-      <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
+      <div className="ss-card p-6">
         <h2 className="text-base font-semibold text-gray-800 mb-5">
           Replies <span className="text-gray-400 font-normal">({replies.length})</span>
         </h2>
@@ -123,7 +123,7 @@ const ForumPost = () => {
                     {(reply.isAnonymous ? 'A' : reply.user?.name?.charAt(0) || 'U').toUpperCase()}
                   </span>
                 </div>
-                <div className="flex-1 bg-gray-50 rounded-xl px-4 py-3">
+                <div className="flex-1 bg-gray-50 rounded-xl px-4 py-3 border border-indigo-50">
                   <div className="flex items-center gap-2 mb-1">
                     <span className="text-xs font-semibold text-gray-700">{reply.isAnonymous ? 'Anonymous' : reply.user?.name}</span>
                     <span className="text-xs text-gray-400">{formatTime(reply.createdAt)}</span>
@@ -145,11 +145,11 @@ const ForumPost = () => {
               value={newReply}
               onChange={e => setNewReply(e.target.value)}
               placeholder="Share your thoughts or support..."
-              className="w-full h-24 px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-sm text-gray-800 placeholder-gray-400 focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 focus:outline-none resize-none transition"
+              className="ss-textarea h-24 bg-gray-50"
             />
             <div className="flex justify-end">
               <button type="submit" disabled={!newReply.trim() || submitting}
-                className="inline-flex items-center gap-2 bg-indigo-600 hover:bg-indigo-500 disabled:opacity-40 text-white px-5 py-2.5 rounded-xl text-sm font-semibold transition-colors">
+                className="ss-btn-primary text-sm">
                 <Send size={15} /> {submitting ? 'Posting...' : 'Post Reply'}
               </button>
             </div>
@@ -158,7 +158,7 @@ const ForumPost = () => {
       </div>
 
       {/* Guidelines */}
-      <div className="bg-indigo-50 rounded-2xl p-5">
+      <div className="bg-indigo-50/80 rounded-2xl p-5 border border-indigo-100">
         <p className="text-xs font-semibold text-indigo-700 mb-2">Community Guidelines</p>
         <p className="text-xs text-indigo-600 leading-relaxed">Be respectful and supportive. Avoid medical advice. Share your experiences to help others feel less alone. Remember everyone's journey is different.</p>
       </div>

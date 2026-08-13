@@ -27,9 +27,9 @@ const Login = () => {
   };
 
   return (
-    <div className="min-h-screen flex bg-[#F7F5F2]">
+    <div className="min-h-screen flex bg-serenity-bg">
       {/* Left panel */}
-      <div className="hidden lg:flex lg:w-1/2 bg-indigo-600 flex-col justify-between p-12">
+      <div className="hidden lg:flex lg:w-1/2 bg-gradient-to-br from-serenity-indigo via-serenity-violet to-serenity-teal flex-col justify-between p-12">
         <div className="flex items-center gap-3">
           <div className="w-9 h-9 bg-white/20 rounded-xl flex items-center justify-center">
             <Brain size={20} className="text-white" />
@@ -37,7 +37,7 @@ const Login = () => {
           <span className="text-xl font-bold text-white">SoulSpace</span>
         </div>
         <div>
-          <h2 className="text-4xl font-bold text-white leading-snug mb-4">
+          <h2 className="text-4xl font-display font-bold text-white leading-snug mb-4">
             Your mental health<br />journey starts here.
           </h2>
           <p className="text-indigo-200 text-lg">
@@ -49,7 +49,7 @@ const Login = () => {
 
       {/* Right panel */}
       <div className="flex-1 flex items-center justify-center px-6 py-12">
-        <div className="w-full max-w-sm">
+        <div className="w-full max-w-sm ss-card p-7">
           <div className="lg:hidden flex items-center gap-2 mb-10">
             <div className="w-8 h-8 bg-indigo-600 rounded-xl flex items-center justify-center">
               <Brain size={16} className="text-white" />
@@ -57,7 +57,7 @@ const Login = () => {
             <span className="text-lg font-bold text-gray-900">SoulSpace</span>
           </div>
 
-          <h1 className="text-2xl font-bold text-gray-900 mb-1">Welcome back</h1>
+          <h1 className="text-2xl font-display font-bold text-gray-900 mb-1">Welcome back</h1>
           <p className="text-gray-500 text-sm mb-8">Sign in to continue your journey</p>
 
           {error && (
@@ -76,7 +76,7 @@ const Login = () => {
                 value={form.email}
                 onChange={handleChange}
                 required
-                className="w-full px-4 py-3 bg-white border border-gray-200 rounded-xl text-gray-900 placeholder-gray-400 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100 focus:outline-none transition"
+                className="ss-input"
               />
             </div>
             <div>
@@ -91,13 +91,13 @@ const Login = () => {
                 value={form.password}
                 onChange={handleChange}
                 required
-                className="w-full px-4 py-3 bg-white border border-gray-200 rounded-xl text-gray-900 placeholder-gray-400 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100 focus:outline-none transition"
+                className="ss-input"
               />
             </div>
             <button
               type="submit"
               disabled={loading}
-              className="w-full py-3 bg-indigo-600 hover:bg-indigo-500 disabled:opacity-50 text-white font-semibold rounded-xl transition-colors flex items-center justify-center gap-2 mt-2"
+              className="ss-btn-primary w-full py-3 mt-2"
             >
               {loading ? <><Loader size={16} className="animate-spin" /> Signing in...</> : 'Sign In'}
             </button>
