@@ -37,17 +37,17 @@ const ForumCreate = () => {
   };
 
   return (
-    <div className="max-w-2xl mx-auto py-8 space-y-6">
+    <div className="max-w-3xl mx-auto py-8 space-y-6">
       <div>
         <button onClick={() => navigate('/forum')} className="inline-flex items-center gap-2 text-sm text-gray-400 hover:text-gray-700 transition-colors mb-4">
           <ArrowLeft size={16} /> Back to Community
         </button>
-        <h1 className="text-2xl font-bold text-gray-900 mb-1">Create a Post</h1>
-        <p className="text-gray-400 text-sm">Start a supportive conversation</p>
+        <h1 className="ss-section-title mb-1">Create a Post</h1>
+        <p className="ss-subtitle">Start a supportive conversation</p>
       </div>
 
       {/* Category picker */}
-      <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5">
+      <div className="ss-card p-5">
         <p className="text-sm font-semibold text-gray-700 mb-3">Choose a category</p>
         <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
           {categories.map(c => (
@@ -60,7 +60,7 @@ const ForumCreate = () => {
       </div>
 
       {/* Form */}
-      <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5 space-y-4">
+      <div className="ss-card p-5 space-y-4">
         {error && (
           <div className="bg-red-50 border border-red-200 text-red-600 text-sm rounded-xl px-4 py-3">{error}</div>
         )}
@@ -68,7 +68,7 @@ const ForumCreate = () => {
           <label className="block text-sm font-medium text-gray-700 mb-1.5">Title</label>
           <input type="text" name="title" value={form.title} onChange={handleChange} required
             placeholder="What would you like to discuss?"
-            className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-sm text-gray-800 placeholder-gray-400 focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 focus:outline-none transition" />
+            className="ss-input bg-gray-50" />
         </div>
         <div>
           <div className="flex items-center justify-between mb-1.5">
@@ -77,7 +77,7 @@ const ForumCreate = () => {
           </div>
           <textarea name="content" value={form.content} onChange={handleChange} required
             placeholder="Share your thoughts, experiences, or questions..."
-            className="w-full h-40 px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-sm text-gray-800 placeholder-gray-400 focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 focus:outline-none resize-none transition" />
+            className="ss-textarea h-40 bg-gray-50" />
         </div>
         <label className="flex items-center gap-3 cursor-pointer">
           <div onClick={() => setForm(p => ({ ...p, isAnonymous: !p.isAnonymous }))}
@@ -91,11 +91,11 @@ const ForumCreate = () => {
       {/* Actions */}
       <div className="flex gap-3">
         <button type="button" onClick={() => navigate('/forum')}
-          className="flex-1 py-3 bg-white border border-gray-200 text-gray-600 font-semibold rounded-xl hover:bg-gray-50 transition-colors text-sm">
+          className="ss-btn-secondary flex-1 py-3 text-sm">
           Cancel
         </button>
         <button onClick={handleSubmit} disabled={!form.title.trim() || !form.content.trim() || loading}
-          className="flex-1 py-3 bg-indigo-600 hover:bg-indigo-500 disabled:opacity-40 text-white font-semibold rounded-xl transition-colors flex items-center justify-center gap-2 text-sm">
+          className="ss-btn-primary flex-1 py-3 text-sm">
           <Send size={16} /> {loading ? 'Posting...' : 'Post'}
         </button>
       </div>

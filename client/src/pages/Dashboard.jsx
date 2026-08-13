@@ -6,32 +6,32 @@ import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGri
 import { Smile, BookOpen, MessageCircle, Wind, TrendingUp, Flame, CalendarCheck, Star, ArrowRight } from 'lucide-react';
 
 const Card = ({ children, className = '' }) => (
-  <div className={`bg-white rounded-2xl shadow-sm border border-gray-100 ${className}`}>{children}</div>
+  <div className={`ss-card ${className}`}>{children}</div>
 );
 
 const StatCard = ({ label, value, sub, icon: Icon, bg, iconColor }) => (
   <Card className="p-5">
     <div className="flex items-start justify-between mb-4">
-      <p className="text-sm text-gray-500 font-medium">{label}</p>
+      <p className="text-sm text-serenity-subtle font-medium">{label}</p>
       <div className={`w-9 h-9 ${bg} rounded-xl flex items-center justify-center`}>
         <Icon size={18} className={iconColor} />
       </div>
     </div>
     <p className="text-3xl font-bold text-gray-900">{value}
-      <span className="text-base font-normal text-gray-400 ml-1">{sub}</span>
+      <span className="text-base font-normal text-gray-500 ml-1">{sub}</span>
     </p>
   </Card>
 );
 
 const QuickAction = ({ icon: Icon, label, desc, bg, iconColor, onClick }) => (
   <button onClick={onClick}
-    className="bg-white rounded-2xl shadow-sm border border-gray-100 p-5 hover:shadow-md hover:-translate-y-0.5 transition-all group text-left w-full">
+    className="ss-card p-5 hover:-translate-y-0.5 hover:shadow-card transition-all group text-left w-full">
     <div className={`w-11 h-11 ${bg} rounded-2xl flex items-center justify-center mb-3`}>
       <Icon size={22} className={iconColor} />
     </div>
     <p className="text-sm font-semibold text-gray-800">{label}</p>
-    <p className="text-xs text-gray-400 mt-0.5">{desc}</p>
-    <ArrowRight size={14} className="text-gray-300 mt-2 group-hover:text-indigo-500 transition-colors" />
+    <p className="text-xs text-gray-500 mt-0.5">{desc}</p>
+    <ArrowRight size={14} className="text-gray-300 mt-2 group-hover:text-indigo-600 transition-colors" />
   </button>
 );
 
@@ -107,18 +107,37 @@ const Dashboard = () => {
   };
 
   return (
-    <div className="max-w-6xl mx-auto py-8 space-y-8">
+    <div className="ss-page">
+      <div className="ss-card-soft p-6 md:p-8">
+        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-5">
+          <div>
+            <p className="text-sm text-indigo-600 font-semibold mb-2">Your wellness dashboard</p>
+            <h1 className="ss-section-title">{greeting()}, {user?.name?.split(' ')[0] || 'there'} 👋</h1>
+            <p className="ss-subtitle mt-2 max-w-2xl">
+              A calm snapshot of your day with gentle prompts to reflect, track your mood, and stay connected.
+            </p>
+            <p className="text-gray-500 text-sm mt-2">
+              {new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' })}
+            </p>
+          </div>
+          <div className="flex flex-wrap gap-2">
+            <button onClick={() => navigate('/journal')} className="ss-btn-primary text-sm">Start Journaling</button>
+            <button onClick={() => navigate('/mood/check-in')} className="ss-btn-secondary text-sm">Track Mood</button>
+          </div>
+        </div>
+        <div className="flex flex-wrap gap-2 mt-5">
+          {['Private by default', 'Supportive routines', 'Gentle progress tracking'].map((item) => (
+            <span key={item} className="ss-chip">{item}</span>
+          ))}
+        </div>
+      </div>
 
-      {/* Header */}
       <div>
-        <h1 className="text-2xl font-bold text-gray-900">{greeting()}, {user?.name?.split(' ')[0] || 'there'} 👋</h1>
-        <p className="text-gray-400 text-sm mt-1">
-          {new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' })}
-        </p>
+        <p className="text-xs font-semibold uppercase tracking-[0.18em] text-indigo-400 mb-3">Quick actions</p>
       </div>
 
       {/* Quick Actions */}
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
         <QuickAction icon={Smile} label="Check Mood" desc="How are you feeling?" bg="bg-indigo-50" iconColor="text-indigo-600" onClick={() => navigate('/mood/check-in')} />
         <QuickAction icon={BookOpen} label="Write Journal" desc="Express yourself" bg="bg-violet-50" iconColor="text-violet-600" onClick={() => navigate('/journal')} />
         <QuickAction icon={MessageCircle} label="AI Chat" desc="Talk it out" bg="bg-teal-50" iconColor="text-teal-600" onClick={() => navigate('/chat')} />
@@ -126,7 +145,7 @@ const Dashboard = () => {
       </div>
 
       {/* Stats */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
         {loading ? (
           [1,2,3,4].map(i => <Skeleton key={i} className="h-28" />)
         ) : (
@@ -144,13 +163,13 @@ const Dashboard = () => {
         <Card className="lg:col-span-2 p-6">
           <h2 className="text-base font-semibold text-gray-800 mb-6">Mood this week</h2>
           {loading ? <Skeleton className="h-48" /> : moodData.length > 0 ? (
-            <ResponsiveContainer width="100%" height={200}>
+            <ResponsiveContainer width="100%" height={220}>
               <BarChart data={moodData} margin={{ top: 5, right: 10, left: -20, bottom: 0 }}>
-                <CartesianGrid strokeDasharray="3 3" stroke="#f3f4f6" />
-                <XAxis dataKey={e => new Date(e.timestamp).toLocaleDateString('en-US', { weekday: 'short' })} tick={{ fill: '#9ca3af', fontSize: 11 }} tickLine={false} axisLine={false} />
-                <YAxis domain={[0, 10]} tick={{ fill: '#9ca3af', fontSize: 11 }} tickLine={false} axisLine={false} />
-                <Tooltip contentStyle={{ background: '#fff', border: '1px solid #e5e7eb', borderRadius: 12, fontSize: 12, boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.05)' }} cursor={{ fill: '#f9fafb' }} />
-                <Bar dataKey="intensity" radius={[6, 6, 0, 0]} fill="#6366f1" maxBarSize={40} />
+                <CartesianGrid strokeDasharray="3 3" stroke="#e9edf7" />
+                <XAxis dataKey={e => new Date(e.timestamp).toLocaleDateString('en-US', { weekday: 'short' })} tick={{ fill: '#7b8498', fontSize: 11 }} tickLine={false} axisLine={false} />
+                <YAxis domain={[0, 10]} tick={{ fill: '#7b8498', fontSize: 11 }} tickLine={false} axisLine={false} />
+                <Tooltip contentStyle={{ background: '#fff', border: '1px solid #e5e7eb', borderRadius: 12, fontSize: 12, boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.05)' }} cursor={{ fill: '#f3f6fe' }} />
+                <Bar dataKey="intensity" radius={[8, 8, 0, 0]} fill="#5b66e6" maxBarSize={42} />
               </BarChart>
             </ResponsiveContainer>
           ) : (
@@ -171,14 +190,14 @@ const Dashboard = () => {
           ) : insights.length > 0 ? (
             <div className="space-y-3">
               {insights.slice(0, 3).map((insight, i) => (
-                <div key={i} className="p-3 bg-indigo-50 rounded-xl">
+                <div key={i} className="p-3 bg-indigo-50/70 rounded-xl border border-indigo-100">
                   <p className="text-xs font-semibold text-indigo-600 mb-1">{insight.title}</p>
-                  <p className="text-xs text-gray-500 leading-relaxed">{insight.value}</p>
+                  <p className="text-xs text-gray-600 leading-relaxed">{insight.value}</p>
                 </div>
               ))}
             </div>
           ) : (
-            <p className="text-sm text-gray-400">Start tracking to unlock insights.</p>
+            <p className="text-sm text-gray-500">Start tracking to unlock insights.</p>
           )}
         </Card>
       </div>
@@ -189,18 +208,18 @@ const Dashboard = () => {
         {loading ? (
           <div className="space-y-3">{[1,2,3].map(i => <Skeleton key={i} className="h-10" />)}</div>
         ) : recentActivities.length > 0 ? (
-          <ul className="divide-y divide-gray-50">
+          <ul className="divide-y divide-indigo-50">
             {recentActivities.slice(0, 5).map((a, i) => (
-              <li key={i} className="py-3 flex items-center justify-between">
+              <li key={i} className="py-3 flex items-center justify-between gap-4">
                 <p className="text-sm text-gray-700">{a.title || a.description}</p>
-                <p className="text-xs text-gray-400 ml-4 whitespace-nowrap">
+                <p className="text-xs text-gray-400 whitespace-nowrap">
                   {a.timestamp ? new Date(a.timestamp).toLocaleDateString() : a.time || ''}
                 </p>
               </li>
             ))}
           </ul>
         ) : (
-          <p className="text-sm text-gray-400">No recent activity yet. Start exploring SoulSpace!</p>
+          <p className="text-sm text-gray-500">No recent activity yet. Start exploring SoulSpace!</p>
         )}
       </Card>
     </div>

@@ -95,20 +95,20 @@ const CalmZone = () => {
   const phase = phaseColors[breathPhase];
 
   return (
-    <div className="max-w-3xl mx-auto py-8 space-y-6">
+    <div className="max-w-4xl mx-auto py-8 space-y-6">
       <div>
-        <h1 className="text-2xl font-bold text-gray-900 mb-1">Calm Zone</h1>
-        <p className="text-gray-400 text-sm">Breathe, relax, and find your peace</p>
+        <h1 className="ss-section-title mb-1">Calm Zone</h1>
+        <p className="ss-subtitle">Breathe, relax, and reset at your own pace</p>
       </div>
 
       {/* Breathing */}
-      <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
+      <div className="ss-card p-6">
         <div className="flex items-center gap-2 mb-5">
           <Wind size={18} className="text-indigo-500" />
           <h2 className="text-base font-semibold text-gray-800">Breathing Exercises</h2>
         </div>
 
-        <div className="grid grid-cols-3 gap-3 mb-6">
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-6">
           {breathingExercises.map(ex => (
             <button key={ex.name}
               onClick={() => { setSelectedExercise(ex); setBreathActive(false); setBreathPhase('inhale'); }}
@@ -137,12 +137,12 @@ const CalmZone = () => {
       </div>
 
       {/* Ambient Sounds */}
-      <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
+      <div className="ss-card p-6">
         <div className="flex items-center gap-2 mb-5">
           <Music size={18} className="text-teal-500" />
           <h2 className="text-base font-semibold text-gray-800">Ambient Sounds</h2>
         </div>
-        <div className="grid grid-cols-5 gap-3">
+        <div className="grid grid-cols-2 sm:grid-cols-5 gap-3">
           {ambientSounds.map(s => (
             <button key={s.id}
               onClick={() => setSelectedSound(selectedSound?.id === s.id ? null : s)}
@@ -173,7 +173,7 @@ const CalmZone = () => {
       </div>
 
       {/* Meditation Timer */}
-      <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
+      <div className="ss-card p-6">
         <div className="flex items-center gap-2 mb-5">
           <Timer size={18} className="text-violet-500" />
           <h2 className="text-base font-semibold text-gray-800">Meditation Timer</h2>

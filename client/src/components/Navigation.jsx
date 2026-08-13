@@ -50,17 +50,17 @@ const SidebarContent = ({ onClose }) => {
   };
 
   return (
-    <div className="flex flex-col h-full bg-white border-r border-gray-100">
+    <div className="flex flex-col h-full bg-white/90 backdrop-blur-xl border-r border-indigo-100/70 shadow-soft">
       {/* Logo */}
-      <div className="flex items-center justify-between h-16 px-5 border-b border-gray-100 flex-shrink-0">
+      <div className="flex items-center justify-between h-16 px-5 border-b border-indigo-100/80 flex-shrink-0">
         <div className="flex items-center gap-2.5">
-          <div className="w-8 h-8 bg-indigo-600 rounded-xl flex items-center justify-center">
+          <div className="w-8 h-8 bg-gradient-to-br from-serenity-indigo via-serenity-violet to-serenity-teal rounded-xl flex items-center justify-center shadow-md">
             <Brain size={16} className="text-white" />
           </div>
-          <span className="text-lg font-bold text-gray-900">SoulSpace</span>
+          <span className="text-lg font-display font-bold text-serenity-text">SoulSpace</span>
         </div>
         {onClose && (
-          <button onClick={onClose} className="text-gray-400 hover:text-gray-600">
+          <button onClick={onClose} className="text-gray-400 hover:text-gray-700 rounded-lg p-1 hover:bg-white/80">
             <X size={20} />
           </button>
         )}
@@ -70,7 +70,7 @@ const SidebarContent = ({ onClose }) => {
       <nav className="flex-1 px-3 py-5 overflow-y-auto space-y-5">
         {navGroups.map(group => (
           <div key={group.label}>
-            <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider px-3 mb-1.5">
+            <p className="text-[11px] font-semibold text-indigo-400 uppercase tracking-wider px-3 mb-1.5">
               {group.label}
             </p>
             <div className="space-y-0.5">
@@ -84,8 +84,8 @@ const SidebarContent = ({ onClose }) => {
                     onClick={onClose}
                     className={`flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all ${
                       active
-                        ? 'bg-indigo-50 text-indigo-600'
-                        : 'text-gray-500 hover:text-gray-800 hover:bg-gray-50'
+                        ? 'bg-gradient-to-r from-indigo-50 to-violet-50 text-indigo-700 shadow-sm'
+                        : 'text-gray-500 hover:text-gray-800 hover:bg-white/80'
                     }`}
                   >
                     <Icon size={18} className={active ? 'text-indigo-600' : 'text-gray-400'} />
@@ -99,7 +99,7 @@ const SidebarContent = ({ onClose }) => {
       </nav>
 
       {/* User */}
-      <div className="border-t border-gray-100 p-4 flex-shrink-0">
+      <div className="border-t border-indigo-100/80 p-4 flex-shrink-0">
         <div className="flex items-center gap-3">
           <div className={`w-9 h-9 ${getAvatarColor(user?.name)} rounded-xl flex items-center justify-center flex-shrink-0`}>
             <span className="text-white text-sm font-semibold">
@@ -108,9 +108,9 @@ const SidebarContent = ({ onClose }) => {
           </div>
           <div className="flex-1 min-w-0">
             <p className="text-sm font-semibold text-gray-800 truncate">{user?.name || 'User'}</p>
-            <p className="text-xs text-gray-400 truncate">{user?.email || ''}</p>
+            <p className="text-xs text-gray-500 truncate">{user?.email || ''}</p>
           </div>
-          <button onClick={handleLogout} className="text-gray-400 hover:text-gray-600 transition-colors p-1" title="Logout">
+          <button onClick={handleLogout} className="text-gray-400 hover:text-gray-700 hover:bg-white rounded-lg transition-colors p-1.5" title="Logout">
             <LogOut size={16} />
           </button>
         </div>
@@ -124,25 +124,27 @@ const Navigation = () => {
 
   return (
     <>
-      <div className="hidden lg:flex lg:flex-col lg:w-64 lg:fixed lg:inset-y-0">
-        <SidebarContent />
+      <div className="hidden lg:flex lg:flex-col lg:w-72 lg:fixed lg:inset-y-0 lg:px-4 lg:py-4">
+        <div className="h-full rounded-3xl overflow-hidden">
+          <SidebarContent />
+        </div>
       </div>
 
-      <div className="lg:hidden fixed inset-x-0 top-0 z-40 flex h-16 items-center gap-4 border-b border-gray-100 bg-white px-4">
+      <div className="lg:hidden fixed inset-x-0 top-0 z-40 flex h-16 items-center gap-4 border-b border-indigo-100/70 bg-white/90 backdrop-blur-md px-4">
         <button onClick={() => setMobileOpen(true)} className="text-gray-500 hover:text-gray-800">
           <Menu size={22} />
         </button>
         <div className="flex items-center gap-2">
-          <div className="w-7 h-7 bg-indigo-600 rounded-lg flex items-center justify-center">
+          <div className="w-7 h-7 bg-gradient-to-br from-serenity-indigo via-serenity-violet to-serenity-teal rounded-lg flex items-center justify-center">
             <Brain size={14} className="text-white" />
           </div>
-          <span className="text-base font-bold text-gray-900">SoulSpace</span>
+          <span className="text-base font-display font-bold text-gray-900">SoulSpace</span>
         </div>
       </div>
 
       {mobileOpen && (
         <div className="fixed inset-0 z-50 lg:hidden">
-          <div className="fixed inset-0 bg-black/20" onClick={() => setMobileOpen(false)} />
+          <div className="fixed inset-0 bg-slate-900/30 backdrop-blur-sm" onClick={() => setMobileOpen(false)} />
           <div className="fixed inset-y-0 left-0 w-72">
             <SidebarContent onClose={() => setMobileOpen(false)} />
           </div>
